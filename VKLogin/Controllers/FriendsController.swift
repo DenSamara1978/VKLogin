@@ -31,22 +31,18 @@ class FriendsController: UITableViewController {
         searchController.searchResultsUpdater = self
         tableView.tableHeaderView = searchController.searchBar
         
+        loadData ()
         Session.instance.receiveFriendList ( completion: setFriendList )
     }
 
-    func appendFriend ( firstName: String, lastName: String, image: UIImage ) {
-        let letter = String ( firstName.first ?? "-" )
-        friends [letter]?.append(Friend (_firstName: firstName, _lastName: lastName ))
-    }
-    
-    func getFriend ( section: Int, row: Int ) -> Friend? {
+    private func getFriend ( section: Int, row: Int ) -> Friend? {
         let title = sections [section]
         return actuallyFriends [title]?[row]
     }
     
-    func setFriendList ( _ list: [Friend] ) {
-        friendsArray = list
-        for friend in list {
+    private func buildFriendsDict () {
+        friends = [:]
+        for friend in friendsArray {
             let letter = String ( friend.firstName.first ?? "-" )
             friendsArray.append ( friend )
             if ( friends [letter] == nil ) {
@@ -56,6 +52,11 @@ class FriendsController: UITableViewController {
                 friends [letter]?.append(friend)
             }
         }
+    }
+    
+    func setFriendList ( _ list: [Friend] ) {
+        friendsArray = list
+        buildFriendsDict()
         
         DispatchQueue.main.async {
             self.tableView.reloadData ()
@@ -63,17 +64,27 @@ class FriendsController: UITableViewController {
         }
     }
     
-    func saveData() {
+    private func saveData() {
         do {
+            Realm.Configuration.defaultConfiguration = Realm.Configuration ( deleteRealmIfMigrationNeeded: true )
             let realm = try Realm()
             realm.beginWrite()
-            realm.add(friendsArray)
+            realm.add ( friendsArray, update: .modified )
             try realm.commitWrite()
         } catch {
             print(error)
         }
     }
-    
+   
+    private func loadData () {
+        do {
+            let realm = try Realm ()
+            friendsArray = Array ( realm.objects ( Friend.self ))
+            buildFriendsDict()
+        } catch {
+            print ( error.localizedDescription )
+        }
+    }
     
 
     // MARK: - Table view data source
@@ -101,7 +112,30 @@ class FriendsController: UITableViewController {
         }
         let friend = getFriend ( section: indexPath.section, row: indexPath.row )
         cell.friendNameLabel.text = ( friend?.firstName ?? "" ) + " " + (friend?.lastName ?? "")
-        cell.friendImageView.setImage ( image: friend?.img )
+        
+        if let image = friend?.img {
+            cell.friendImageView.setImage ( image: image )
+        } else {
+            let url = friend?.photoUrl ?? ""
+            DispatchQueue.global().async {
+                let image = Session.instance.receiveImageByURL ( imageUrl: url )
+                
+                DispatchQueue.main.async {
+                    friend?.img = image
+                    self.tableView.reloadRows ( at: [indexPath], with: .automatic )
+                }
+            }
+        }
+
+//        DispatchQueue.global().async {
+//            let image = Session.instance.receiveImageByURL ( imageUrl: url )
+//
+//            DispatchQueue.main.async {
+//                cell.friendImageView.setImage ( image: image )
+//                friend?.img = image
+//            }
+//        }
+//        
         return cell
     }
     

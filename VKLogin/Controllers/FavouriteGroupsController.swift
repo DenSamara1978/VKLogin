@@ -32,6 +32,7 @@ class FavouriteGroupsController: UITableViewController {
         searchController.searchResultsUpdater = self
         tableView.tableHeaderView = searchController.searchBar
         
+        loadData ()
         Session.instance.receiveGroupList(completion: setGroupArray(_:) )
     }
 
@@ -46,14 +47,24 @@ class FavouriteGroupsController: UITableViewController {
         }
     }
  
-    func saveData() {
+    private func saveData() {
         do {
+            Realm.Configuration.defaultConfiguration = Realm.Configuration ( deleteRealmIfMigrationNeeded: true )
             let realm = try Realm()
             realm.beginWrite()
-            realm.add(groups)
+            realm.add ( groups, update: .modified )
             try realm.commitWrite()
         } catch {
             print(error)
+        }
+    }
+    
+    private func loadData () {
+        do {
+            let realm = try Realm ()
+            groups = Array ( realm.objects ( Group.self ))
+        } catch {
+            print ( error.localizedDescription )
         }
     }
 
@@ -71,7 +82,21 @@ class FavouriteGroupsController: UITableViewController {
             preconditionFailure ( "Can't dequeue GroupCell" )
         }
         cell.groupnameLabel.text = actuallyGroups [indexPath.row].groupName
-        cell.groupImageView.setImage ( image: actuallyGroups [indexPath.row].img )
+        
+        if let image = actuallyGroups [indexPath.row].img {
+            cell.groupImageView.setImage ( image: image )
+        } else {
+            let url = actuallyGroups [indexPath.row].photoUrl
+            DispatchQueue.global().async {
+                let image = Session.instance.receiveImageByURL ( imageUrl: url )
+                
+                DispatchQueue.main.async {
+                    self.actuallyGroups [indexPath.row].img = image
+                    self.tableView.reloadRows ( at: [indexPath], with: .automatic )
+                }
+            }
+        }
+        
         return cell
     }
 }
