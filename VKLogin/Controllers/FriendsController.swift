@@ -11,14 +11,31 @@ import RealmSwift
 
 class FriendsController: UITableViewController {
 
-    private var friendsArray : [Friend] = []
-    private var friends : [ String: [Friend]] = [:]
     private var filteredFriends : [ String: [Friend]] = [:]
     
     private let searchController : UISearchController = .init ()
     
+    private var friendsResult: Results<Friend>?
+    private var realmNotification: NotificationToken?
+
     private var sections : [String] {
         return Array ( actuallyFriends.keys ).sorted ()
+    }
+    
+    private var friends : [String : [Friend ]] {
+        var result : [ String : [Friend]] = [:]
+        guard let fr = friendsResult else { return [:] }
+        let frs = Array ( fr )
+        for friend in frs {
+            let letter = String ( friend.firstName.first ?? "-" )
+            if ( result [letter] == nil ) {
+                result [letter] = [friend]
+            }
+            else {
+                result [letter]?.append(friend)
+            }
+        }
+        return result
     }
 
     private var actuallyFriends : [ String: [Friend]] {
@@ -32,7 +49,7 @@ class FriendsController: UITableViewController {
         tableView.tableHeaderView = searchController.searchBar
         
         loadData ()
-        Session.instance.receiveFriendList ( completion: setFriendList )
+        Session.instance.receiveFriendList ( completion: saveData )
     }
 
     private func getFriend ( section: Int, row: Int ) -> Friend? {
@@ -40,47 +57,37 @@ class FriendsController: UITableViewController {
         return actuallyFriends [title]?[row]
     }
     
-    private func buildFriendsDict () {
-        friends = [:]
-        for friend in friendsArray {
-            let letter = String ( friend.firstName.first ?? "-" )
-            friendsArray.append ( friend )
-            if ( friends [letter] == nil ) {
-                friends [letter] = [friend]
-            }
-            else {
-                friends [letter]?.append(friend)
-            }
-        }
-    }
-    
-    func setFriendList ( _ list: [Friend] ) {
-        friendsArray = list
-        buildFriendsDict()
-        
+    private func saveData( _ list: [Friend] ) {
         DispatchQueue.main.async {
-            self.tableView.reloadData ()
-            self.saveData ()
-        }
-    }
-    
-    private func saveData() {
-        do {
-            Realm.Configuration.defaultConfiguration = Realm.Configuration ( deleteRealmIfMigrationNeeded: true )
-            let realm = try Realm()
-            realm.beginWrite()
-            realm.add ( friendsArray, update: .modified )
-            try realm.commitWrite()
-        } catch {
-            print(error)
+            do {
+                Realm.Configuration.defaultConfiguration = Realm.Configuration ( deleteRealmIfMigrationNeeded: true )
+                let realm = try Realm()
+                realm.beginWrite()
+                realm.add ( list, update: .modified )
+                try realm.commitWrite()
+            } catch {
+                print(error)
+            }
         }
     }
    
     private func loadData () {
         do {
             let realm = try Realm ()
-            friendsArray = Array ( realm.objects ( Friend.self ))
-            buildFriendsDict()
+            friendsResult = realm.objects ( Friend.self )
+            realmNotification = friendsResult?.observe { [weak self] (changes: RealmCollectionChange) in
+                guard let tableView = self?.tableView else { return }
+                switch changes {
+                case .initial:
+                    print ( "initial" )
+                    tableView.reloadData()
+                case .update(_, let deletions, let insertions, let modifications):
+                    print ( "reload" )
+                    tableView.reloadData()
+                case .error(let error):
+                    fatalError("\(error)")
+                }
+            }
         } catch {
             print ( error.localizedDescription )
         }
@@ -119,23 +126,14 @@ class FriendsController: UITableViewController {
             let url = friend?.photoUrl ?? ""
             DispatchQueue.global().async {
                 let image = Session.instance.receiveImageByURL ( imageUrl: url )
-                
+
                 DispatchQueue.main.async {
                     friend?.img = image
-                    self.tableView.reloadRows ( at: [indexPath], with: .automatic )
+                    cell.friendImageView.setImage ( image: image )
                 }
             }
         }
 
-//        DispatchQueue.global().async {
-//            let image = Session.instance.receiveImageByURL ( imageUrl: url )
-//
-//            DispatchQueue.main.async {
-//                cell.friendImageView.setImage ( image: image )
-//                friend?.img = image
-//            }
-//        }
-//        
         return cell
     }
     
