@@ -11,14 +11,31 @@ import RealmSwift
 
 class FriendsController: UITableViewController {
 
-    private var friendsArray : [Friend] = []
-    private var friends : [ String: [Friend]] = [:]
     private var filteredFriends : [ String: [Friend]] = [:]
     
     private let searchController : UISearchController = .init ()
     
+    private var friendsResult: Results<Friend>?
+    private var realmNotification: NotificationToken?
+
     private var sections : [String] {
         return Array ( actuallyFriends.keys ).sorted ()
+    }
+    
+    private var friends : [String : [Friend ]] {
+        var result : [ String : [Friend]] = [:]
+        guard let fr = friendsResult else { return [:] }
+        let frs = Array ( fr )
+        for friend in frs {
+            let letter = String ( friend.firstName.first ?? "-" )
+            if ( result [letter] == nil ) {
+                result [letter] = [friend]
+            }
+            else {
+                result [letter]?.append(friend)
+            }
+        }
+        return result
     }
 
     private var actuallyFriends : [ String: [Friend]] {
@@ -31,49 +48,50 @@ class FriendsController: UITableViewController {
         searchController.searchResultsUpdater = self
         tableView.tableHeaderView = searchController.searchBar
         
-        Session.instance.receiveFriendList ( completion: setFriendList )
+        loadData ()
+        Session.instance.receiveFriendList ( completion: saveData )
     }
 
-    func appendFriend ( firstName: String, lastName: String, image: UIImage ) {
-        let letter = String ( firstName.first ?? "-" )
-        friends [letter]?.append(Friend (_firstName: firstName, _lastName: lastName ))
-    }
-    
-    func getFriend ( section: Int, row: Int ) -> Friend? {
+    private func getFriend ( section: Int, row: Int ) -> Friend? {
         let title = sections [section]
         return actuallyFriends [title]?[row]
     }
     
-    func setFriendList ( _ list: [Friend] ) {
-        friendsArray = list
-        for friend in list {
-            let letter = String ( friend.firstName.first ?? "-" )
-            friendsArray.append ( friend )
-            if ( friends [letter] == nil ) {
-                friends [letter] = [friend]
-            }
-            else {
-                friends [letter]?.append(friend)
-            }
-        }
-        
+    private func saveData( _ list: [Friend] ) {
         DispatchQueue.main.async {
-            self.tableView.reloadData ()
-            self.saveData ()
+            do {
+                Realm.Configuration.defaultConfiguration = Realm.Configuration ( deleteRealmIfMigrationNeeded: true )
+                let realm = try Realm()
+                realm.beginWrite()
+                realm.add ( list, update: .modified )
+                try realm.commitWrite()
+            } catch {
+                print(error)
+            }
         }
     }
-    
-    func saveData() {
+   
+    private func loadData () {
         do {
-            let realm = try Realm()
-            realm.beginWrite()
-            realm.add(friendsArray)
-            try realm.commitWrite()
+            let realm = try Realm ()
+            friendsResult = realm.objects ( Friend.self )
+            realmNotification = friendsResult?.observe { [weak self] (changes: RealmCollectionChange) in
+                guard let tableView = self?.tableView else { return }
+                switch changes {
+                case .initial:
+                    print ( "initial" )
+                    tableView.reloadData()
+                case .update(_, let deletions, let insertions, let modifications):
+                    print ( "reload" )
+                    tableView.reloadData()
+                case .error(let error):
+                    fatalError("\(error)")
+                }
+            }
         } catch {
-            print(error)
+            print ( error.localizedDescription )
         }
     }
-    
     
 
     // MARK: - Table view data source
@@ -101,7 +119,21 @@ class FriendsController: UITableViewController {
         }
         let friend = getFriend ( section: indexPath.section, row: indexPath.row )
         cell.friendNameLabel.text = ( friend?.firstName ?? "" ) + " " + (friend?.lastName ?? "")
-        cell.friendImageView.setImage ( image: friend?.img )
+        
+        if let image = friend?.img {
+            cell.friendImageView.setImage ( image: image )
+        } else {
+            let url = friend?.photoUrl ?? ""
+            DispatchQueue.global().async {
+                let image = Session.instance.receiveImageByURL ( imageUrl: url )
+
+                DispatchQueue.main.async {
+                    friend?.img = image
+                    cell.friendImageView.setImage ( image: image )
+                }
+            }
+        }
+
         return cell
     }
     

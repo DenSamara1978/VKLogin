@@ -13,17 +13,18 @@ class FavouriteGroupsController: UITableViewController {
 
     private var searchController: UISearchController = .init ()
     
-    private var groups: [Group] = []
     private var filteredGroups: [Group] = []
     
-//    private var groups = [
-//        Group ( _groupName : "My first", _image: UIImage ( named : "SampleImage" )! ),
-//        Group ( _groupName : "My second", _image: UIImage ( named : "SampleImage" )! ),
-//        Group ( _groupName : "My third", _image : UIImage ( named : "SampleImage" )! )
-//    ]
-
+    private var groups: Results<Group>?
+    private var realmNotification: NotificationToken?
+    
+    private var groupsArray : [Group] {
+        guard let gr = groups else { return [] }
+        return Array ( gr )
+    }
+    
     private var actuallyGroups : [Group] {
-        return searchController.isActive ? filteredGroups : groups
+        return searchController.isActive ? filteredGroups : groupsArray
     }
     
     override func viewDidLoad() {
@@ -31,29 +32,48 @@ class FavouriteGroupsController: UITableViewController {
 
         searchController.searchResultsUpdater = self
         tableView.tableHeaderView = searchController.searchBar
-        
-        Session.instance.receiveGroupList(completion: setGroupArray(_:) )
+
+        loadData ()
+        Session.instance.receiveGroupList(completion: saveData (_: ) )
     }
 
     // MARK: - Table view data source
 
-    public func setGroupArray ( _ groupArray: [Group] ) {
-        groups = groupArray
-
+    private func saveData( _ groupArray: [Group] ) {
         DispatchQueue.main.async {
-            self.tableView.reloadData ()
-            self.saveData ()
+            do {
+                Realm.Configuration.defaultConfiguration = Realm.Configuration ( deleteRealmIfMigrationNeeded: true )
+                let realm = try Realm()
+                realm.beginWrite()
+                realm.add ( groupArray, update: .modified )
+                try realm.commitWrite()
+            } catch {
+                print(error)
+            }
         }
     }
- 
-    func saveData() {
+    
+    private func loadData () {
         do {
-            let realm = try Realm()
-            realm.beginWrite()
-            realm.add(groups)
-            try realm.commitWrite()
+            let realm = try Realm ()
+            groups = realm.objects ( Group.self )
+            realmNotification = groups?.observe { [weak self] (changes: RealmCollectionChange) in
+                guard let tableView = self?.tableView else { return }
+                switch changes {
+                case .initial:
+                    tableView.reloadData()
+                case .update(_, let deletions, let insertions, let modifications):
+                    tableView.beginUpdates()
+                    tableView.insertRows(at: insertions.map({ IndexPath(row: $0, section: 0) }), with: .automatic)
+                    tableView.deleteRows(at: deletions.map({ IndexPath(row: $0, section: 0)}), with: .automatic)
+                    tableView.reloadRows(at: modifications.map({ IndexPath(row: $0, section: 0) }), with: .automatic)
+                    tableView.endUpdates()
+                case .error(let error):
+                    fatalError("\(error)")
+                }
+            }
         } catch {
-            print(error)
+            print ( error.localizedDescription )
         }
     }
 
@@ -71,7 +91,21 @@ class FavouriteGroupsController: UITableViewController {
             preconditionFailure ( "Can't dequeue GroupCell" )
         }
         cell.groupnameLabel.text = actuallyGroups [indexPath.row].groupName
-        cell.groupImageView.setImage ( image: actuallyGroups [indexPath.row].img )
+        
+        if let image = actuallyGroups [indexPath.row].img {
+            cell.groupImageView.setImage ( image: image )
+        } else {
+            let url = actuallyGroups [indexPath.row].photoUrl
+            DispatchQueue.global().async {
+                let image = Session.instance.receiveImageByURL ( imageUrl: url )
+
+                DispatchQueue.main.async {
+                    self.actuallyGroups [indexPath.row].img = image
+                    cell.groupImageView.setImage ( image: image )
+                }
+            }
+        }
+        
         return cell
     }
 }
@@ -80,7 +114,7 @@ extension FavouriteGroupsController : UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         guard let text = searchController.searchBar.text else { return }
         
-        filteredGroups = groups.reduce( [Group] (), { ( result, arg ) in
+        filteredGroups = groupsArray.reduce( [Group] (), { ( result, arg ) in
             var array = result
             if ( arg.groupName.lowercased().contains(text.lowercased())) {
                 array.append ( arg )

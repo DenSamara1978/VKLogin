@@ -46,7 +46,21 @@ class AllGroupsController: UITableViewController {
             preconditionFailure( "Can't dequeue GroupCell" )
         }
         cell.groupnameLabel.text = groups [indexPath.row].groupName
-        cell.groupImageView.setImage ( image: groups [indexPath.row].img )
+
+        if let image = groups [indexPath.row].img {
+            cell.groupImageView.setImage ( image: image )
+        } else {
+            let url = groups [indexPath.row].photoUrl
+            DispatchQueue.global().async {
+                let image = Session.instance.receiveImageByURL ( imageUrl: url )
+                
+                DispatchQueue.main.async {
+                    self.groups [indexPath.row].img = image
+                    self.tableView.reloadRows ( at: [indexPath], with: .automatic )
+                }
+            }
+        }
+
         return cell
     }
 }
