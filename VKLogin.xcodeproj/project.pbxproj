@@ -37,6 +37,7 @@
 		92DBD99823E1635B00CB11EF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92DBD99623E1635B00CB11EF /* Main.storyboard */; };
 		92DBD99A23E1635E00CB11EF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 92DBD99923E1635E00CB11EF /* Assets.xcassets */; };
 		92DBD99D23E1635E00CB11EF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92DBD99B23E1635E00CB11EF /* LaunchScreen.storyboard */; };
+		92E3DF87243C521400F762B8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 92E3DF86243C521400F762B8 /* GoogleService-Info.plist */; };
 		92ED918A241C0D9F008D2025 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92ED9189241C0D9F008D2025 /* Session.swift */; };
 /* End PBXBuildFile section */
 
@@ -73,6 +74,7 @@
 		92DBD99923E1635E00CB11EF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		92DBD99C23E1635E00CB11EF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		92DBD99E23E1635E00CB11EF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		92E3DF86243C521400F762B8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		92ED9189241C0D9F008D2025 /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
 		AA70BB68F5E04FE8B29AC500 /* Pods-VKLogin.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VKLogin.debug.xcconfig"; path = "Target Support Files/Pods-VKLogin/Pods-VKLogin.debug.xcconfig"; sourceTree = "<group>"; };
 		C89E1FFF197F2AA11E97B49B /* Pods-VKLogin.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VKLogin.release.xcconfig"; path = "Target Support Files/Pods-VKLogin/Pods-VKLogin.release.xcconfig"; sourceTree = "<group>"; };
@@ -198,6 +200,7 @@
 				92C519F023EDF77300899D23 /* Controllers */,
 				92DBD99623E1635B00CB11EF /* Main.storyboard */,
 				92DBD99923E1635E00CB11EF /* Assets.xcassets */,
+				92E3DF86243C521400F762B8 /* GoogleService-Info.plist */,
 				92DBD99B23E1635E00CB11EF /* LaunchScreen.storyboard */,
 				92DBD99E23E1635E00CB11EF /* Info.plist */,
 			);
@@ -265,6 +268,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9285CB5A23EEB7BB00B4F749 /* emoticon-emoji-smiley-clip-art-emoticon-thumb.jpg in Resources */,
+				92E3DF87243C521400F762B8 /* GoogleService-Info.plist in Resources */,
 				9201E9B323F6D19A00B93767 /* heart_PNG51352.png in Resources */,
 				92DBD99D23E1635E00CB11EF /* LaunchScreen.storyboard in Resources */,
 				92DBD99A23E1635E00CB11EF /* Assets.xcassets in Resources */,

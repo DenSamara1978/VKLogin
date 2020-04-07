@@ -9,5 +9,8 @@ target 'VKLogin' do
 
   pod 'SwiftyJSON'
   pod 'RealmSwift'
+  pod 'Firebase/Analytics'
+  pod 'Firebase/Auth'
+  pod 'Firebase/Database'
 
 end

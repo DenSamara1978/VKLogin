@@ -19,7 +19,7 @@ import SwiftyJSON
 
 class Session
 {
-    var token: String = ""
+    var token: String = "-1"
     var userId: String = "-1"
     
     static let instance = Session ()
