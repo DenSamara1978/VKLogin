@@ -150,7 +150,7 @@
                                 <connections>
                                     <outlet property="friendImageView" destination="nQ2-H4-4oR" id="Jdc-51-y7v"/>
                                     <outlet property="friendNameLabel" destination="27L-LD-uLo" id="dEn-3A-pXA"/>
-                                    <segue destination="Bul-EF-H65" kind="show" identifier="Show Friend's Photos" id="AUT-65-zRt"/>
+                                    <segue destination="ynw-2F-hx9" kind="show" identifier="Show Friend's Photos" id="tSP-nW-pfl"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -170,7 +170,7 @@
             <objects>
                 <viewController id="Bul-EF-H65" customClass="NewPhotoController" customModule="VKLogin" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8t9-sN-C04">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xXF-k1-Crq">
@@ -201,7 +201,7 @@
             <objects>
                 <collectionViewController modalPresentationStyle="fullScreen" id="ynw-2F-hx9" customClass="PhotoController" customModule="VKLogin" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="kjx-NM-7C5">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="ag0-vA-SNX">
@@ -213,7 +213,7 @@
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" reuseIdentifier="PhotoCell" id="fqD-Ob-nzS" userLabel="PhotoCell" customClass="PhotoCell" customModule="VKLogin" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="180" height="231"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
+                                <autoresizingMask key="autoresizingMask"/>
                                 <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="Mer-6L-lwe">
                                     <rect key="frame" x="0.0" y="0.0" width="180" height="231"/>
                                     <autoresizingMask key="autoresizingMask"/>

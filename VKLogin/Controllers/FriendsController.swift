@@ -120,7 +120,7 @@ class FriendsController: UITableViewController {
         let friend = getFriend ( section: indexPath.section, row: indexPath.row )
         cell.friendNameLabel.text = ( friend?.firstName ?? "" ) + " " + (friend?.lastName ?? "")
         
-        if let image = friend?.img {
+        if let image = friend?.avatar {
             cell.friendImageView.setImage ( image: image )
         } else {
             let url = friend?.photoUrl ?? ""
@@ -128,7 +128,7 @@ class FriendsController: UITableViewController {
                 let image = Session.instance.receiveImageByURL ( imageUrl: url )
 
                 DispatchQueue.main.async {
-                    friend?.img = image
+                    friend?.avatar = image
                     cell.friendImageView.setImage ( image: image )
                 }
             }
@@ -143,10 +143,10 @@ class FriendsController: UITableViewController {
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "Show Friend's Photos", let indexPath = tableView.indexPathForSelectedRow {
-            let destinationViewController = segue.destination as? NewPhotoController
-            let friend = getFriend ( section: indexPath.section, row: indexPath.row )
-            destinationViewController?.friendName = (friend?.firstName ?? "") + " " + (friend?.lastName ?? "")
-            destinationViewController?.friendImage = friend?.img
+            let destinationViewController = segue.destination as? PhotoController
+            if let friend = getFriend ( section: indexPath.section, row: indexPath.row ) {
+                destinationViewController?.friend = friend
+            }
         }
     }
     
