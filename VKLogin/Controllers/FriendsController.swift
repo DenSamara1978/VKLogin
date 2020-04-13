@@ -46,9 +46,16 @@ class FriendsController: UITableViewController {
         super.viewDidLoad()
 
         searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
         tableView.tableHeaderView = searchController.searchBar
+        refreshControl = UIRefreshControl ()
+        refreshControl?.addTarget( self, action: #selector ( refresh ), for: .valueChanged)
         
         loadData ()
+        Session.instance.receiveFriendList ( completion: saveData )
+    }
+
+    @objc func refresh () {
         Session.instance.receiveFriendList ( completion: saveData )
     }
 
@@ -58,13 +65,14 @@ class FriendsController: UITableViewController {
     }
     
     private func saveData( _ list: [Friend] ) {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
             do {
                 Realm.Configuration.defaultConfiguration = Realm.Configuration ( deleteRealmIfMigrationNeeded: true )
                 let realm = try Realm()
                 realm.beginWrite()
                 realm.add ( list, update: .modified )
                 try realm.commitWrite()
+                self?.refreshControl?.endRefreshing()
             } catch {
                 print(error)
             }
@@ -127,9 +135,9 @@ class FriendsController: UITableViewController {
             DispatchQueue.global().async {
                 let image = Session.instance.receiveImageByURL ( imageUrl: url )
 
-                DispatchQueue.main.async {
+                DispatchQueue.main.async { [weak friend, weak cell] in
                     friend?.avatar = image
-                    cell.friendImageView.setImage ( image: image )
+                    cell?.friendImageView.setImage ( image: image )
                 }
             }
         }
@@ -137,7 +145,6 @@ class FriendsController: UITableViewController {
         return cell
     }
     
-
     
     // MARK: - Navigation
 

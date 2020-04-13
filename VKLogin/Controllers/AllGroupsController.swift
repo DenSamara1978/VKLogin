@@ -19,6 +19,7 @@ class AllGroupsController: UITableViewController {
         super.viewDidLoad()
         
         searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
         tableView.tableHeaderView = searchController.searchBar
     }
 
@@ -27,8 +28,8 @@ class AllGroupsController: UITableViewController {
     public func setGroupArray ( _ groupArray: [Group] ) {
         groups = groupArray
         
-        DispatchQueue.main.async {
-            self.tableView.reloadData ()
+        DispatchQueue.main.async { [weak self] in
+            self?.tableView.reloadData ()
         }
     }
     
@@ -51,12 +52,12 @@ class AllGroupsController: UITableViewController {
             cell.groupImageView.setImage ( image: image )
         } else {
             let url = groups [indexPath.row].photoUrl
-            DispatchQueue.global().async {
+            DispatchQueue.global().async { [weak self] in
                 let image = Session.instance.receiveImageByURL ( imageUrl: url )
                 
-                DispatchQueue.main.async {
-                    self.groups [indexPath.row].img = image
-                    self.tableView.reloadRows ( at: [indexPath], with: .automatic )
+                DispatchQueue.main.async { [weak self] in
+                    self?.groups [indexPath.row].img = image
+                    self?.tableView.reloadRows ( at: [indexPath], with: .automatic )
                 }
             }
         }
