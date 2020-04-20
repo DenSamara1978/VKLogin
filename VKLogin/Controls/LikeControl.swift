@@ -29,36 +29,25 @@ import UIKit
     private var imageView : UIImageView?
     private var stackView : UIStackView!
     
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
-    }
-    */
-    
-    override func layoutSubviews()
-    {
+   
+    override func layoutSubviews() {
         super.layoutSubviews()
-        button?.frame = bounds
+        button?.frame = CGRect ( x: bounds.midX, y: 0, width: 40, height: 40 )
     }
 
-    override init(frame: CGRect)
-    {
+    override init(frame: CGRect) {
         super.init ( frame: frame )
         setupControl ()
     }
     
-    required init? ( coder: NSCoder )
-    {
+    required init? ( coder: NSCoder ) {
         super.init ( coder: coder )
         setupControl ()
     }
     
-    private func setupControl ()
-    {
+    private func setupControl () {
         imageView = UIImageView (image: UIImage ( named : "Heart" ))
-        imageView?.frame = CGRect ( x: 50, y: 0, width: 50, height: 40 )
+        imageView?.frame = CGRect ( x: 100, y: 0, width: 40, height: 30 )
         imageView?.alpha = 0.2
         
         let btn = UIButton (type: .system )
@@ -72,28 +61,22 @@ import UIKit
         addSubview ( imageView! )
     }
     
-    private func updateControl ()
-    {
-        if likes == 0
-        {
+    private func updateControl () {
+        if likes == 0 {
             button?.setTitleColor ( .lightGray, for: .normal )
-        }
-        else
-        {
+        } else {
             button?.setTitleColor ( .red, for: .normal )
         }
         
         let alpha: Float = Float ( imageView?.alpha ?? 0.0 )
         
-        if hasMyLike && alpha < 1.0
-        {
+        if hasMyLike && alpha < 1.0 {
             UIView.animate ( withDuration: 0.5, animations: {
                 self.imageView?.alpha = 1.0
             })
         }
         
-        if !hasMyLike && alpha > 0.2
-        {
+        if !hasMyLike && alpha > 0.2 {
             UIView.animate ( withDuration: 0.5, animations: {
                 self.imageView?.alpha = 0.2
             })
@@ -102,15 +85,11 @@ import UIKit
         button!.setTitle ( String ( likes ), for: .normal )
     }
     
-    @objc func toggleLike ( _ sender: UIButton )
-    {
+    @objc func toggleLike ( _ sender: UIButton ) {
         hasMyLike = !hasMyLike
-        if hasMyLike
-        {
+        if hasMyLike {
             likes += 1;
-        }
-        else
-        {
+        } else {
             likes -= 1;
         }
     }

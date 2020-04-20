@@ -46,9 +46,16 @@ class FriendsController: UITableViewController {
         super.viewDidLoad()
 
         searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
         tableView.tableHeaderView = searchController.searchBar
+        refreshControl = UIRefreshControl ()
+        refreshControl?.addTarget( self, action: #selector ( refresh ), for: .valueChanged)
         
         loadData ()
+        Session.instance.receiveFriendList ( completion: saveData )
+    }
+
+    @objc func refresh () {
         Session.instance.receiveFriendList ( completion: saveData )
     }
 
@@ -58,13 +65,14 @@ class FriendsController: UITableViewController {
     }
     
     private func saveData( _ list: [Friend] ) {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
             do {
                 Realm.Configuration.defaultConfiguration = Realm.Configuration ( deleteRealmIfMigrationNeeded: true )
                 let realm = try Realm()
                 realm.beginWrite()
                 realm.add ( list, update: .modified )
                 try realm.commitWrite()
+                self?.refreshControl?.endRefreshing()
             } catch {
                 print(error)
             }
@@ -120,16 +128,16 @@ class FriendsController: UITableViewController {
         let friend = getFriend ( section: indexPath.section, row: indexPath.row )
         cell.friendNameLabel.text = ( friend?.firstName ?? "" ) + " " + (friend?.lastName ?? "")
         
-        if let image = friend?.img {
+        if let image = friend?.avatar {
             cell.friendImageView.setImage ( image: image )
         } else {
             let url = friend?.photoUrl ?? ""
             DispatchQueue.global().async {
                 let image = Session.instance.receiveImageByURL ( imageUrl: url )
 
-                DispatchQueue.main.async {
-                    friend?.img = image
-                    cell.friendImageView.setImage ( image: image )
+                DispatchQueue.main.async { [weak friend, weak cell] in
+                    friend?.avatar = image
+                    cell?.friendImageView.setImage ( image: image )
                 }
             }
         }
@@ -137,16 +145,15 @@ class FriendsController: UITableViewController {
         return cell
     }
     
-
     
     // MARK: - Navigation
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "Show Friend's Photos", let indexPath = tableView.indexPathForSelectedRow {
-            let destinationViewController = segue.destination as? NewPhotoController
-            let friend = getFriend ( section: indexPath.section, row: indexPath.row )
-            destinationViewController?.friendName = (friend?.firstName ?? "") + " " + (friend?.lastName ?? "")
-            destinationViewController?.friendImage = friend?.img
+            let destinationViewController = segue.destination as? PhotoController
+            if let friend = getFriend ( section: indexPath.section, row: indexPath.row ) {
+                destinationViewController?.friend = friend
+            }
         }
     }
     
