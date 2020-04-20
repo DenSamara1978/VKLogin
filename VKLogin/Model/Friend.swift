@@ -15,7 +15,8 @@ class Friend : Object
     @objc dynamic var lastName : String = ""
     @objc dynamic var photoUrl : String = ""
     @objc dynamic var id : Int = 0
-    var img : UIImage?
+    var avatar : UIImage?
+    var images : [UIImage?] = []
 
     convenience required init ( _id: Int, _firstName: String, _lastName: String, _photoUrl: String ) {
         self.init ()

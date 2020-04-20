@@ -77,7 +77,20 @@ class Session
             }
             completion ( groups )
         }
-
+    }
+    
+    public func receiveUserPhotoList ( user: String, completion: @escaping ( [String] ) -> Void ) {
+        let queries = [
+            URLQueryItem ( name: "owner_id", value: user ),
+            URLQueryItem ( name: "album_id", value: "profile" )
+        ]
+        post ( method: "photos.get", queries: queries ) {[completion] ( json ) in
+            var urls : [String] = []
+            for item in json ["items"].arrayValue {
+                urls.append( item ["photo_130"].stringValue )
+            }
+            completion ( urls )
+        }
     }
     
     public func receiveImageByURL ( imageUrl: String ) -> UIImage? {
