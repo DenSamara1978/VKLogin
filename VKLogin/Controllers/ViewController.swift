@@ -7,9 +7,23 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class ViewController: UIViewController {
     @IBOutlet weak var goButton: UIButton!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        Auth.auth().signInAnonymously() { ( result, error ) in
+            if let error = error {
+                print ( "Firebase error: \(error.localizedDescription)" )
+            }
+            else {
+                print ( "Firebase connected" )
+            }
+
+        }
+    }
     
 }
 
