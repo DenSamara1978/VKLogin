@@ -10,6 +10,8 @@
 		761611937B3F60BEFF90C116 /* Pods_VKLogin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82EA5E84174674CC5AA17407 /* Pods_VKLogin.framework */; };
 		9201E9B123F6985400B93767 /* LikeControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9201E9B023F6985400B93767 /* LikeControl.swift */; };
 		9201E9B323F6D19A00B93767 /* heart_PNG51352.png in Resources */ = {isa = PBXBuildFile; fileRef = 9201E9B223F6D19A00B93767 /* heart_PNG51352.png */; };
+		9214D8CE244EC4C100F7A603 /* PostNewsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9214D8CD244EC4C100F7A603 /* PostNewsCell.swift */; };
+		9214D8D0244EC54800F7A603 /* PostNews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9214D8CF244EC54800F7A603 /* PostNews.swift */; };
 		923E0531243200AF000DA150 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 923E0530243200AF000DA150 /* WebKit.framework */; };
 		9241116D241E9451004DCEC8 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9241116C241E9451004DCEC8 /* LoginViewController.swift */; };
 		9244443B2431E71300912641 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9244443A2431E71300912641 /* Default-568h@2x.png */; };
@@ -45,6 +47,8 @@
 		82EA5E84174674CC5AA17407 /* Pods_VKLogin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VKLogin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9201E9B023F6985400B93767 /* LikeControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeControl.swift; sourceTree = "<group>"; };
 		9201E9B223F6D19A00B93767 /* heart_PNG51352.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = heart_PNG51352.png; path = Assets/heart_PNG51352.png; sourceTree = "<group>"; };
+		9214D8CD244EC4C100F7A603 /* PostNewsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostNewsCell.swift; sourceTree = "<group>"; };
+		9214D8CF244EC54800F7A603 /* PostNews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostNews.swift; sourceTree = "<group>"; };
 		923E0530243200AF000DA150 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		9241116C241E9451004DCEC8 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		9244443A2431E71300912641 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
@@ -117,6 +121,7 @@
 				9285CB5223EEADA100B4F749 /* Group.swift */,
 				9287A84C23F4235F00A1FE7B /* Friend.swift */,
 				92ED9189241C0D9F008D2025 /* Session.swift */,
+				9214D8CF244EC54800F7A603 /* PostNews.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -127,6 +132,7 @@
 				9285CB5523EEB21C00B4F749 /* PhotoCell.swift */,
 				9285CB5B23EEC73700B4F749 /* FriendCell.swift */,
 				9285CB5D23EED23400B4F749 /* GroupCell.swift */,
+				9214D8CD244EC4C100F7A603 /* PostNewsCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -326,6 +332,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9214D8CE244EC4C100F7A603 /* PostNewsCell.swift in Sources */,
 				92A064E22412A6700052651D /* DotAnimator.swift in Sources */,
 				9285CB5323EEADA100B4F749 /* Group.swift in Sources */,
 				9287A85023F4796B00A1FE7B /* RoungImageView.swift in Sources */,
@@ -334,6 +341,7 @@
 				92D7576E240D8D960021FF84 /* CustomPopAnimator.swift in Sources */,
 				92C519F823EDF8AE00899D23 /* AllGroupsController.swift in Sources */,
 				92DBD99523E1635B00CB11EF /* ViewController.swift in Sources */,
+				9214D8D0244EC54800F7A603 /* PostNews.swift in Sources */,
 				9287A84D23F4235F00A1FE7B /* Friend.swift in Sources */,
 				9285CB5E23EED23400B4F749 /* GroupCell.swift in Sources */,
 				92C519F223EDF80600899D23 /* FriendsController.swift in Sources */,

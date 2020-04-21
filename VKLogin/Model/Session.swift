@@ -79,6 +79,27 @@ class Session
         }
     }
     
+    public func receiveNewsList ( completion: @escaping ( [PostNews] ) -> Void ) {
+        let queries = [
+            URLQueryItem ( name: "filters", value: "post" )
+        ]
+        post ( method: "newsfeed.get", queries: queries ) {[completion] ( json ) in
+            var postNews : [PostNews] = []
+            for item in json ["items"].arrayValue {
+
+                let id = item["post_id"].intValue
+                let text = item["text"].stringValue
+                let comments = item["comments"]["count"].intValue
+                let reposts = item["reposts"]["count"].intValue
+                let likes = item["likes"]["count"].intValue
+                let views = item["views"]["count"].intValue
+ 
+                postNews.append ( PostNews ( id: id, source: "...", text: text, comments: comments, views: views, reposts: reposts, likes: likes ))
+            }
+            completion ( postNews )
+        }
+    }
+    
     public func receiveUserPhotoList ( user: String, completion: @escaping ( [String] ) -> Void ) {
         let queries = [
             URLQueryItem ( name: "owner_id", value: user ),
