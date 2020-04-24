@@ -26,27 +26,25 @@ class NewsController: UITableViewController {
         refreshControl?.addTarget(self, action: #selector ( refresh ), for: .valueChanged)
         
         loadData ()
-        Session.instance.receiveNewsList(completion: saveData )
+        NetSession.instance.receiveNewsList(completion: saveData )
     }
 
     @objc func refresh () {
-        Session.instance.receiveNewsList(completion: saveData )
+        NetSession.instance.receiveNewsList(completion: saveData )
     }
 
     // MARK: - Table view data source
 
     private func saveData( _ newsArray: [PostNews] ) {
-        DispatchQueue.main.async { [weak self] in
-            do {
-                Realm.Configuration.defaultConfiguration = Realm.Configuration ( deleteRealmIfMigrationNeeded: true )
-                let realm = try Realm()
-                realm.beginWrite()
-                realm.add ( newsArray, update: .modified )
-                try realm.commitWrite()
-                self?.refreshControl?.endRefreshing()
-            } catch {
-                print(error)
-            }
+        do {
+            Realm.Configuration.defaultConfiguration = Realm.Configuration ( deleteRealmIfMigrationNeeded: true )
+            let realm = try Realm()
+            realm.beginWrite()
+            realm.add ( newsArray, update: .modified )
+            try realm.commitWrite()
+            refreshControl?.endRefreshing()
+        } catch {
+            print(error)
         }
     }
     
@@ -86,13 +84,25 @@ class NewsController: UITableViewController {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "PostNewsCell", for: indexPath) as? PostNewsCell else {
             preconditionFailure ( "Can't dequeue PostNewsCell" )
         }
-        cell.postText.text = newsArray [indexPath.row].text
-        cell.likesCountLabel.text = "\(newsArray [indexPath.row].likesCount)"
-        cell.viewsCountLabel.text = "\(newsArray [indexPath.row].viewsCount)"
-        cell.repostsCountLabel.text = "\(newsArray [indexPath.row].repostsCount)"
-        cell.commentsCountLabel.text = "\(newsArray [indexPath.row].commentsCount)"
-        cell.ownerName.text = "\(newsArray[indexPath.row].sourceName)"
+        
+        let news = newsArray [indexPath.row]
+        cell.postText.text = news.text
+        cell.likesCountLabel.text = "\(news.likesCount)"
+        cell.viewsCountLabel.text = "\(news.viewsCount)"
+        cell.repostsCountLabel.text = "\(news.repostsCount)"
+        cell.commentsCountLabel.text = "\(news.commentsCount)"
+        cell.ownerName.text = news.sourceName
  
+        if let image = news.avatar {
+            cell.ownerImage.setImage ( image: image )
+        } else {
+            let url = news.photoUrl
+            NetSession.instance.receiveImageByURL ( imageUrl: url ) { [ weak news, weak cell] ( image ) in
+                news?.avatar = image
+                cell?.ownerImage.setImage ( image: image )
+            }
+        }
+
         return cell
     }
 }

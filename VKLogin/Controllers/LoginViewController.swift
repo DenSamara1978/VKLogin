@@ -55,14 +55,14 @@ extension LoginViewController : WKNavigationDelegate {
         
         let token = params ["access_token"] ?? "-1"
         print ( "Token is : \(token)" )
-        Session.instance.token = token
+        NetSession.instance.token = token
         
         let user_id = params ["user_id"] ?? "-1"
         print ( "User_id is : \(user_id)" )
-        Session.instance.userId = user_id
+        NetSession.instance.userId = user_id
 
         let db = Database.database().reference()
-        Session.instance.receiveGroupList() { ( groups ) in
+        NetSession.instance.receiveGroupList() { ( groups ) in
             groups.forEach() { ( body ) in
                 db.child ( "users" ).child ( user_id ).child ( "groups" ).updateChildValues( [ "\(body.id)" : body.groupName ] )
             }

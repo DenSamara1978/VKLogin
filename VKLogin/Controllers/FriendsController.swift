@@ -52,11 +52,11 @@ class FriendsController: UITableViewController {
         refreshControl?.addTarget( self, action: #selector ( refresh ), for: .valueChanged)
         
         loadData ()
-        Session.instance.receiveFriendList ( completion: saveData )
+        NetSession.instance.receiveFriendList ( completion: saveData )
     }
 
     @objc func refresh () {
-        Session.instance.receiveFriendList ( completion: saveData )
+        NetSession.instance.receiveFriendList ( completion: saveData )
     }
 
     private func getFriend ( section: Int, row: Int ) -> Friend? {
@@ -65,17 +65,15 @@ class FriendsController: UITableViewController {
     }
     
     private func saveData( _ list: [Friend] ) {
-        DispatchQueue.main.async { [weak self] in
-            do {
-                Realm.Configuration.defaultConfiguration = Realm.Configuration ( deleteRealmIfMigrationNeeded: true )
-                let realm = try Realm()
-                realm.beginWrite()
-                realm.add ( list, update: .modified )
-                try realm.commitWrite()
-                self?.refreshControl?.endRefreshing()
-            } catch {
-                print(error)
-            }
+        do {
+            Realm.Configuration.defaultConfiguration = Realm.Configuration ( deleteRealmIfMigrationNeeded: true )
+            let realm = try Realm()
+            realm.beginWrite()
+            realm.add ( list, update: .modified )
+            try realm.commitWrite()
+            refreshControl?.endRefreshing()
+        } catch {
+            print(error)
         }
     }
    
@@ -132,13 +130,9 @@ class FriendsController: UITableViewController {
             cell.friendImageView.setImage ( image: image )
         } else {
             let url = friend?.photoUrl ?? ""
-            DispatchQueue.global().async {
-                let image = Session.instance.receiveImageByURL ( imageUrl: url )
-
-                DispatchQueue.main.async { [weak friend, weak cell] in
-                    friend?.avatar = image
-                    cell?.friendImageView.setImage ( image: image )
-                }
+            NetSession.instance.receiveImageByURL ( imageUrl: url ) { [ weak friend, weak cell] ( image ) in
+                friend?.avatar = image
+                cell?.friendImageView.setImage ( image: image )
             }
         }
 

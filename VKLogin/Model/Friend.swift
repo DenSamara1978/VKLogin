@@ -21,9 +21,9 @@ class Friend : Object
     convenience required init ( _id: Int, _firstName: String, _lastName: String, _photoUrl: String ) {
         self.init ()
         self.id = _id
-        self.firstName = _firstName
-        self.lastName = _lastName
-        self.photoUrl = _photoUrl
+        firstName = _firstName
+        lastName = _lastName
+        photoUrl = _photoUrl
     }
     
     override class func primaryKey() -> String? {

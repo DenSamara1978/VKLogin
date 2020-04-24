@@ -27,10 +27,7 @@ class AllGroupsController: UITableViewController {
 
     public func setGroupArray ( _ groupArray: [Group] ) {
         groups = groupArray
-        
-        DispatchQueue.main.async { [weak self] in
-            self?.tableView.reloadData ()
-        }
+        tableView.reloadData ()
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -48,15 +45,15 @@ class AllGroupsController: UITableViewController {
         }
         cell.groupnameLabel.text = groups [indexPath.row].groupName
 
-        if let image = groups [indexPath.row].img {
+        let group = groups [indexPath.row]
+        if let image = group.img {
             cell.groupImageView.setImage ( image: image )
         } else {
-            let url = groups [indexPath.row].photoUrl
-            DispatchQueue.global().async { [weak self] in
-                let image = Session.instance.receiveImageByURL ( imageUrl: url )
-                
-                DispatchQueue.main.async { [weak self] in
-                    self?.groups [indexPath.row].img = image
+            let url = group.photoUrl
+            NetSession.instance.receiveImageByURL ( imageUrl: url ) { [weak self, weak group, url] ( image ) in
+                guard let group = group else { return }
+                if group.photoUrl == url {
+                    group.img = image
                     self?.tableView.reloadRows ( at: [indexPath], with: .automatic )
                 }
             }
@@ -72,7 +69,7 @@ extension AllGroupsController : UISearchResultsUpdating {
         if text.count < 2 {
             setGroupArray ( [] )
         } else {
-            Session.instance.receiveSearchedGroups( text.lowercased (), completion: setGroupArray ( _: ))
+            NetSession.instance.receiveSearchedGroups( text.lowercased (), completion: setGroupArray ( _: ))
         }
     }
 }
