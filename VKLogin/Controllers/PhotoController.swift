@@ -16,10 +16,8 @@ class PhotoController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-//        self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "PhotoCell")
-        
         title = ( friend?.firstName ?? "" ) + " " + ( friend?.lastName ?? "" )
-        Session.instance.receiveUserPhotoList ( user: "\(friend?.id ?? -1)" ) { ( urls: [String] ) in
+        NetSession.instance.receiveUserPhotoList ( user: "\(friend?.id ?? -1)" ) { ( urls: [String] ) in
             self.photoUrls = urls
             if ( self.friend?.images.count != urls.count ) {
                 self.friend?.images = Array ( repeating: nil, count: urls.count )
@@ -51,13 +49,9 @@ class PhotoController: UICollectionViewController {
             cell.imageView.image = image
         } else {
             let url = photoUrls [row]
-            DispatchQueue.global().async {
-                let image = Session.instance.receiveImageByURL ( imageUrl: url )
-                
-                DispatchQueue.main.async {
-                    self.collectionView.reloadData()
-                    self.friend?.images [row] = image
-                }
+            NetSession.instance.receiveImageByURL ( imageUrl: url ) { [weak self] ( image ) in
+                self?.collectionView.reloadData()
+                self?.friend?.images [row] = image
             }
         }
 

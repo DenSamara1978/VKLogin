@@ -17,12 +17,12 @@ import SwiftyJSON
  */
 
 
-class Session
+class NetSession
 {
     var token: String = "-1"
     var userId: String = "-1"
     
-    static let instance = Session ()
+    static let instance = NetSession ()
     
     private init () {
     }
@@ -39,29 +39,39 @@ class Session
                     }
                     user_ids += String ( item.intValue )
                 }
-                let queries = [
-                    URLQueryItem ( name: "user_ids", value: user_ids ),
-                    URLQueryItem ( name: "fields", value: "first_name, last_name, photo_200_orig" )
-                ]
-                self.post ( method: "users.get", queries: queries ) { [completion] ( json ) in
-                    var friends : [Friend] = []
-                    for item in json.arrayValue {
-                        let id = item ["id"].intValue
-                        let firstName = item ["first_name"].stringValue
-                        let lastName = item ["last_name"].stringValue
-                        let photoUrl = item ["photo_200_orig"].stringValue
-                        let friend = Friend ( _id: id, _firstName: firstName, _lastName: lastName, _photoUrl: photoUrl )
-                        friends.append ( friend )
+                self.receiveUserData(user_ids: user_ids ) { [completion] ( friends ) in
+                    DispatchQueue.main.async {
+                        completion ( friends )
                     }
-                    completion ( friends )
                 }
             }
             else {
-                completion ( [] )
+                DispatchQueue.main.async {
+                    completion ( [] )
+                }
             }
         }
     }
     
+    public func receiveUserData ( user_ids: String, completion: @escaping ( [Friend] ) -> Void ) {
+        let queries = [
+            URLQueryItem ( name: "user_ids", value: user_ids ),
+            URLQueryItem ( name: "fields", value: "first_name, last_name, photo_200_orig" )
+        ]
+        self.post ( method: "users.get", queries: queries ) { [completion] ( json ) in
+            var friends : [Friend] = []
+            for item in json.arrayValue {
+                let id = item ["id"].intValue
+                let firstName = item ["first_name"].stringValue
+                let lastName = item ["last_name"].stringValue
+                let photoUrl = item ["photo_200_orig"].stringValue
+                let friend = Friend ( _id: id, _firstName: firstName, _lastName: lastName, _photoUrl: photoUrl )
+                friends.append ( friend )
+            }
+            completion ( friends )
+        }
+    }
+
     public func receiveGroupList ( completion: @escaping ( [Group] ) -> Void ) {
         let queries = [
             URLQueryItem ( name: "extended", value: "1" ),
@@ -75,7 +85,9 @@ class Session
                     groups.append ( Group ( _id: item ["id"].intValue, _groupName: item ["name"].stringValue, _photoUrl: item ["photo_200"].stringValue ))
                 }
             }
-            completion ( groups )
+            DispatchQueue.main.async {
+                completion ( groups )
+            }
         }
     }
     
@@ -83,20 +95,38 @@ class Session
         let queries = [
             URLQueryItem ( name: "filters", value: "post" )
         ]
-        post ( method: "newsfeed.get", queries: queries ) {[completion] ( json ) in
+        post ( method: "newsfeed.get", queries: queries ) {[completion, self] ( json ) in
             var postNews : [PostNews] = []
-            for item in json ["items"].arrayValue {
+            let newsArray = json ["items"].arrayValue
 
-                let id = item["post_id"].intValue
-                let text = item["text"].stringValue
-                let comments = item["comments"]["count"].intValue
-                let reposts = item["reposts"]["count"].intValue
-                let likes = item["likes"]["count"].intValue
-                let views = item["views"]["count"].intValue
- 
-                postNews.append ( PostNews ( id: id, source: "...", text: text, comments: comments, views: views, reposts: reposts, likes: likes ))
+            var user_ids : String = ""
+            for item in newsArray {
+                if ( !user_ids.isEmpty ) {
+                    user_ids += ","
+                }
+                user_ids += String ( item ["source_id"].intValue )
             }
-            completion ( postNews )
+            self.receiveUserData(user_ids: user_ids) { ( friends ) in
+                for item in newsArray {
+
+                    let id = item["post_id"].intValue
+                    let text = item["text"].stringValue
+                    let comments = item["comments"]["count"].intValue
+                    let reposts = item["reposts"]["count"].intValue
+                    let likes = item["likes"]["count"].intValue
+                    let views = item["views"]["count"].intValue
+                    let source_id = item["source_id"].intValue
+                    
+                    let friend = friends.first() { $0.id == source_id }
+                    if ( friend != nil ) {
+                        let name = friend!.firstName + " " + friend!.lastName
+                        postNews.append ( PostNews ( id: id, sourceName: name, text: text, comments: comments, views: views, reposts: reposts, likes: likes, _photoUrl: friend!.photoUrl ))
+                    }
+                }
+                DispatchQueue.main.async {
+                    completion ( postNews )
+                }
+            }
         }
     }
     
@@ -114,14 +144,16 @@ class Session
         }
     }
     
-    public func receiveImageByURL ( imageUrl: String ) -> UIImage? {
-        guard let url = URL(string: imageUrl) else { return nil }
-        
-        if let imageData: Data = try? Data(contentsOf: url) {
-            return UIImage(data: imageData)
+    public func receiveImageByURL ( imageUrl: String, completion: @escaping ( UIImage? ) -> Void ) {
+        DispatchQueue.global().async {
+            guard let url = URL(string: imageUrl) else { return }
+            
+            if let imageData: Data = try? Data(contentsOf: url) {
+                DispatchQueue.main.async {
+                    completion ( UIImage ( data: imageData ));
+                }
+            }
         }
-        
-        return nil
     }
 
     public func receiveSearchedGroups ( _ groupName: String, completion: @escaping ( [Group] ) -> Void  ) {
@@ -133,7 +165,9 @@ class Session
                     groups.append ( Group ( _id: item ["id"].intValue, _groupName: item ["name"].stringValue, _photoUrl: item ["photo_200"].stringValue ))
                 }
             }
-            completion ( groups )
+            DispatchQueue.main.async {
+                completion ( groups )
+            }
         }
     }
     

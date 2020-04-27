@@ -21,10 +21,6 @@ class Group : Object
         self.id = _id
         self.groupName = _groupName
         self.photoUrl = _photoUrl
-        
-        DispatchQueue.global().async {
-            self.img = Session.instance.receiveImageByURL ( imageUrl: _photoUrl )
-        }
     }
     
     override class func primaryKey() -> String? {

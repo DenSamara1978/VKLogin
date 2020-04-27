@@ -37,27 +37,25 @@ class FavouriteGroupsController: UITableViewController {
         refreshControl?.addTarget(self, action: #selector ( refresh ), for: .valueChanged)
         
         loadData ()
-        Session.instance.receiveGroupList(completion: saveData )
+        NetSession.instance.receiveGroupList(completion: saveData )
     }
     
     @objc func refresh () {
-        Session.instance.receiveGroupList(completion: saveData )
+        NetSession.instance.receiveGroupList(completion: saveData )
     }
 
     // MARK: - Table view data source
 
     private func saveData( _ groupArray: [Group] ) {
-        DispatchQueue.main.async { [weak self] in
-            do {
-                Realm.Configuration.defaultConfiguration = Realm.Configuration ( deleteRealmIfMigrationNeeded: true )
-                let realm = try Realm()
-                realm.beginWrite()
-                realm.add ( groupArray, update: .modified )
-                try realm.commitWrite()
-                self?.refreshControl?.endRefreshing()
-            } catch {
-                print(error)
-            }
+        do {
+            Realm.Configuration.defaultConfiguration = Realm.Configuration ( deleteRealmIfMigrationNeeded: true )
+            let realm = try Realm()
+            realm.beginWrite()
+            realm.add ( groupArray, update: .modified )
+            try realm.commitWrite()
+            refreshControl?.endRefreshing()
+        } catch {
+            print(error)
         }
     }
     
@@ -104,13 +102,9 @@ class FavouriteGroupsController: UITableViewController {
             cell.groupImageView.setImage ( image: image )
         } else {
             let url = actuallyGroups [indexPath.row].photoUrl
-            DispatchQueue.global().async { [weak self] in
-                let image = Session.instance.receiveImageByURL ( imageUrl: url )
-
-                DispatchQueue.main.async { [weak self, weak cell] in
-                    self?.actuallyGroups [indexPath.row].img = image
-                    cell?.groupImageView.setImage ( image: image )
-                }
+            NetSession.instance.receiveImageByURL ( imageUrl: url ) { [ weak cell, weak self ] ( image ) in
+                self?.actuallyGroups [indexPath.row].img = image
+                cell?.groupImageView.setImage ( image: image )
             }
         }
         
