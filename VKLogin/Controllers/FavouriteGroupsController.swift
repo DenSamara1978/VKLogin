@@ -37,28 +37,15 @@ class FavouriteGroupsController: UITableViewController {
         refreshControl?.addTarget(self, action: #selector ( refresh ), for: .valueChanged)
         
         loadData ()
-        NetSession.instance.receiveGroupList(completion: saveData )
+        GroupDataSource.receiveGroupList(controller: self)
     }
     
     @objc func refresh () {
-        NetSession.instance.receiveGroupList(completion: saveData )
+        GroupDataSource.receiveGroupList(controller: self)
     }
 
     // MARK: - Table view data source
 
-    private func saveData( _ groupArray: [Group] ) {
-        do {
-            Realm.Configuration.defaultConfiguration = Realm.Configuration ( deleteRealmIfMigrationNeeded: true )
-            let realm = try Realm()
-            realm.beginWrite()
-            realm.add ( groupArray, update: .modified )
-            try realm.commitWrite()
-            refreshControl?.endRefreshing()
-        } catch {
-            print(error)
-        }
-    }
-    
     private func loadData () {
         do {
             let realm = try Realm ()

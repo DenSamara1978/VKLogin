@@ -37,7 +37,6 @@ class NewsController: UITableViewController {
 
     private func saveData( _ newsArray: [PostNews] ) {
         do {
-            Realm.Configuration.defaultConfiguration = Realm.Configuration ( deleteRealmIfMigrationNeeded: true )
             let realm = try Realm()
             realm.beginWrite()
             realm.add ( newsArray, update: .modified )

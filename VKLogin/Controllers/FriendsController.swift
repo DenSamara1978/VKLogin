@@ -66,7 +66,6 @@ class FriendsController: UITableViewController {
     
     private func saveData( _ list: [Friend] ) {
         do {
-            Realm.Configuration.defaultConfiguration = Realm.Configuration ( deleteRealmIfMigrationNeeded: true )
             let realm = try Realm()
             realm.beginWrite()
             realm.add ( list, update: .modified )

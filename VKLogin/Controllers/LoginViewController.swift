@@ -9,6 +9,7 @@
 import UIKit
 import WebKit
 import FirebaseDatabase
+import RealmSwift
 
 class LoginViewController: UIViewController {
 
@@ -60,6 +61,8 @@ extension LoginViewController : WKNavigationDelegate {
         let user_id = params ["user_id"] ?? "-1"
         print ( "User_id is : \(user_id)" )
         NetSession.instance.userId = user_id
+
+        Realm.Configuration.defaultConfiguration = Realm.Configuration ( deleteRealmIfMigrationNeeded: true )
 
         let db = Database.database().reference()
         NetSession.instance.receiveGroupList() { ( groups ) in
