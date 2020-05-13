@@ -15,6 +15,12 @@
 		923E0531243200AF000DA150 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 923E0530243200AF000DA150 /* WebKit.framework */; };
 		9241116D241E9451004DCEC8 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9241116C241E9451004DCEC8 /* LoginViewController.swift */; };
 		9244443B2431E71300912641 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9244443A2431E71300912641 /* Default-568h@2x.png */; };
+		92609C0424576CC9005D682E /* AsyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92609C0324576CC9005D682E /* AsyncOperation.swift */; };
+		92609C0624576D28005D682E /* FetchDataOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92609C0524576D28005D682E /* FetchDataOperation.swift */; };
+		92609C0924576FC1005D682E /* GroupDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92609C0824576FC1005D682E /* GroupDataSource.swift */; };
+		92609C0B24577322005D682E /* GroupParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92609C0A24577322005D682E /* GroupParser.swift */; };
+		92609C0F2457763E005D682E /* GroupRealm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92609C0E2457763E005D682E /* GroupRealm.swift */; };
+		92609C1124577854005D682E /* FetchingFinalizator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92609C1024577854005D682E /* FetchingFinalizator.swift */; };
 		926ED74A2409BB7100F8AB1E /* NewPhotoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 926ED7492409BB7100F8AB1E /* NewPhotoController.swift */; };
 		9285CB5323EEADA100B4F749 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9285CB5223EEADA100B4F749 /* Group.swift */; };
 		9285CB5623EEB21C00B4F749 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9285CB5523EEB21C00B4F749 /* PhotoCell.swift */; };
@@ -53,6 +59,12 @@
 		923E0530243200AF000DA150 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		9241116C241E9451004DCEC8 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		9244443A2431E71300912641 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		92609C0324576CC9005D682E /* AsyncOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncOperation.swift; sourceTree = "<group>"; };
+		92609C0524576D28005D682E /* FetchDataOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchDataOperation.swift; sourceTree = "<group>"; };
+		92609C0824576FC1005D682E /* GroupDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDataSource.swift; sourceTree = "<group>"; };
+		92609C0A24577322005D682E /* GroupParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupParser.swift; sourceTree = "<group>"; };
+		92609C0E2457763E005D682E /* GroupRealm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupRealm.swift; sourceTree = "<group>"; };
+		92609C1024577854005D682E /* FetchingFinalizator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchingFinalizator.swift; sourceTree = "<group>"; };
 		926ED7492409BB7100F8AB1E /* NewPhotoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPhotoController.swift; sourceTree = "<group>"; };
 		9285CB5223EEADA100B4F749 /* Group.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
 		9285CB5523EEB21C00B4F749 /* PhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
@@ -117,14 +129,28 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		9285CB4F23EEAD5F00B4F749 /* Model */ = {
+		92609C0724576FA7005D682E /* Group */ = {
 			isa = PBXGroup;
 			children = (
 				9285CB5223EEADA100B4F749 /* Group.swift */,
+				92609C0824576FC1005D682E /* GroupDataSource.swift */,
+				92609C0A24577322005D682E /* GroupParser.swift */,
+				92609C0E2457763E005D682E /* GroupRealm.swift */,
+				92609C1024577854005D682E /* FetchingFinalizator.swift */,
+			);
+			path = Group;
+			sourceTree = "<group>";
+		};
+		9285CB4F23EEAD5F00B4F749 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				92609C0724576FA7005D682E /* Group */,
 				9287A84C23F4235F00A1FE7B /* Friend.swift */,
 				92ED9189241C0D9F008D2025 /* NetSession.swift */,
 				9214D8CF244EC54800F7A603 /* PostNews.swift */,
 				92CF9C982452CB7D006F72E4 /* PhotoNews.swift */,
+				92609C0324576CC9005D682E /* AsyncOperation.swift */,
+				92609C0524576D28005D682E /* FetchDataOperation.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -348,11 +374,16 @@
 				9287A84D23F4235F00A1FE7B /* Friend.swift in Sources */,
 				9285CB5E23EED23400B4F749 /* GroupCell.swift in Sources */,
 				92C519F223EDF80600899D23 /* FriendsController.swift in Sources */,
+				92609C0F2457763E005D682E /* GroupRealm.swift in Sources */,
 				92CF9C992452CB7D006F72E4 /* PhotoNews.swift in Sources */,
 				92C519F423EDF83300899D23 /* PhotoController.swift in Sources */,
 				9241116D241E9451004DCEC8 /* LoginViewController.swift in Sources */,
+				92609C0624576D28005D682E /* FetchDataOperation.swift in Sources */,
+				92609C0424576CC9005D682E /* AsyncOperation.swift in Sources */,
+				92609C0B24577322005D682E /* GroupParser.swift in Sources */,
 				92D7576A240D8B5C0021FF84 /* CustomPushAnimator.swift in Sources */,
 				926ED74A2409BB7100F8AB1E /* NewPhotoController.swift in Sources */,
+				92609C0924576FC1005D682E /* GroupDataSource.swift in Sources */,
 				92C519F623EDF88200899D23 /* FavouriteGroupsController.swift in Sources */,
 				92BDB8D124002C5400CD19BD /* NewsController.swift in Sources */,
 				92D7576C240D8D340021FF84 /* CustomNavigationControllerViewController.swift in Sources */,
@@ -361,6 +392,7 @@
 				9285CB5C23EEC73700B4F749 /* FriendCell.swift in Sources */,
 				92DBD99323E1635B00CB11EF /* SceneDelegate.swift in Sources */,
 				9285CB5623EEB21C00B4F749 /* PhotoCell.swift in Sources */,
+				92609C1124577854005D682E /* FetchingFinalizator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
