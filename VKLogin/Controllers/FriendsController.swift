@@ -52,11 +52,14 @@ class FriendsController: UITableViewController {
         refreshControl?.addTarget( self, action: #selector ( refresh ), for: .valueChanged)
         
         loadData ()
-        NetSession.instance.receiveFriendList ( completion: saveData )
+        refresh ()
     }
 
     @objc func refresh () {
-        NetSession.instance.receiveFriendList ( completion: saveData )
+        let friends = FriendDataSource.receiveFriendList(controller: self)
+        friends.done ( on: .main ) { [weak self] friends in
+            self?.saveData ( friends )
+        }
     }
 
     private func getFriend ( section: Int, row: Int ) -> Friend? {
