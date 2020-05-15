@@ -17,7 +17,9 @@ class FriendsController: UITableViewController {
     
     private var friendsResult: Results<Friend>?
     private var realmNotification: NotificationToken?
-
+    
+    lazy var photoManager = PhotoManager ( table: self.tableView )
+    
     private var sections : [String] {
         return Array ( actuallyFriends.keys ).sorted ()
     }
@@ -56,10 +58,7 @@ class FriendsController: UITableViewController {
     }
 
     @objc func refresh () {
-        let friends = FriendDataSource.receiveFriendList(controller: self)
-        friends.done ( on: .main ) { [weak self] friends in
-            self?.saveData ( friends )
-        }
+        NetSession.instance.receiveFriendList ( completion: saveData )
     }
 
     private func getFriend ( section: Int, row: Int ) -> Friend? {
@@ -127,23 +126,10 @@ class FriendsController: UITableViewController {
         }
         let friend = getFriend ( section: indexPath.section, row: indexPath.row )
         cell.friendNameLabel.text = ( friend?.firstName ?? "" ) + " " + (friend?.lastName ?? "")
-        
-        if let image = friend?.avatar {
-            cell.friendImageView.setImage ( image: image )
-        } else {
-            let url = friend?.photoUrl ?? ""
-            NetSession.instance.receiveImageByURL ( imageUrl: url ) { [ weak friend, weak cell] ( image ) in
-                friend?.avatar = image
-                cell?.friendImageView.setImage ( image: image )
-            }
-        }
-
+        cell.friendImageView.setImage ( image: photoManager.image ( indexPath: indexPath, at: friend?.photoUrl ?? "" ))
         return cell
     }
     
-    
-    // MARK: - Navigation
-
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "Show Friend's Photos", let indexPath = tableView.indexPathForSelectedRow {
             let destinationViewController = segue.destination as? PhotoController

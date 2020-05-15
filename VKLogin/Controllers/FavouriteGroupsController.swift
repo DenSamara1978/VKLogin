@@ -17,7 +17,9 @@ class FavouriteGroupsController: UITableViewController {
     
     private var groups: Results<Group>?
     private var realmNotification: NotificationToken?
-    
+
+    lazy var photoManager = PhotoManager ( table: self.tableView )
+
     private var groupsArray : [Group] {
         guard let gr = groups else { return [] }
         return Array ( gr )
@@ -43,8 +45,6 @@ class FavouriteGroupsController: UITableViewController {
     @objc func refresh () {
         GroupDataSource.receiveGroupList(controller: self)
     }
-
-    // MARK: - Table view data source
 
     private func loadData () {
         do {
@@ -78,23 +78,12 @@ class FavouriteGroupsController: UITableViewController {
         return actuallyGroups.count
     }
 
-    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "GroupCell", for: indexPath) as? GroupCell else {
             preconditionFailure ( "Can't dequeue GroupCell" )
         }
         cell.groupnameLabel.text = actuallyGroups [indexPath.row].groupName
-        
-        if let image = actuallyGroups [indexPath.row].img {
-            cell.groupImageView.setImage ( image: image )
-        } else {
-            let url = actuallyGroups [indexPath.row].photoUrl
-            NetSession.instance.receiveImageByURL ( imageUrl: url ) { [ weak cell, weak self ] ( image ) in
-                self?.actuallyGroups [indexPath.row].img = image
-                cell?.groupImageView.setImage ( image: image )
-            }
-        }
-        
+        cell.groupImageView.setImage ( image: photoManager.image ( indexPath: indexPath, at: actuallyGroups [indexPath.row].photoUrl ))
         return cell
     }
 }

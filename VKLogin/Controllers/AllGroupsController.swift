@@ -12,7 +12,8 @@ import RealmSwift
 class AllGroupsController: UITableViewController {
 
     private var searchController: UISearchController = .init ()
-    
+    lazy var photoManager = PhotoManager ( table: self.tableView )
+
     private var groups: [Group] = []
     
     override func viewDidLoad() {
@@ -22,8 +23,6 @@ class AllGroupsController: UITableViewController {
         searchController.obscuresBackgroundDuringPresentation = false
         tableView.tableHeaderView = searchController.searchBar
     }
-
-    // MARK: - Table view data source
 
     public func setGroupArray ( _ groupArray: [Group] ) {
         groups = groupArray
@@ -38,27 +37,12 @@ class AllGroupsController: UITableViewController {
         return groups.count
     }
 
-    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "GroupCell", for: indexPath) as? GroupCell else {
             preconditionFailure( "Can't dequeue GroupCell" )
         }
         cell.groupnameLabel.text = groups [indexPath.row].groupName
-
-        let group = groups [indexPath.row]
-        if let image = group.img {
-            cell.groupImageView.setImage ( image: image )
-        } else {
-            let url = group.photoUrl
-            NetSession.instance.receiveImageByURL ( imageUrl: url ) { [weak self, weak group, url] ( image ) in
-                guard let group = group else { return }
-                if group.photoUrl == url {
-                    group.img = image
-                    self?.tableView.reloadRows ( at: [indexPath], with: .automatic )
-                }
-            }
-        }
-
+        cell.groupImageView.setImage ( image: photoManager.image ( indexPath: indexPath, at: groups [indexPath.row].photoUrl ))
         return cell
     }
 }
