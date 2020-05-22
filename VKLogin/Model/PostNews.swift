@@ -19,7 +19,6 @@ class PostNews : Object
     @objc dynamic var likesCount : Int = 0
     @objc dynamic var sourceName : String = ""
     @objc dynamic var photoUrl : String = ""
-    var avatar : UIImage?
 
     convenience required init ( id: Int, sourceName: String, text: String, comments: Int, views: Int, reposts: Int, likes: Int, _photoUrl: String ) {
         self.init ()

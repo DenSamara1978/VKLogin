@@ -13,7 +13,8 @@ class NewsController: UITableViewController {
 
     private var news: Results<PostNews>?
     private var realmNotification: NotificationToken?
-    
+    lazy var photoManager = PhotoManager ( table: self.tableView )
+
     private var newsArray : [PostNews] {
         guard let news = news else { return [] }
         return Array ( news )
@@ -91,17 +92,7 @@ class NewsController: UITableViewController {
         cell.repostsCountLabel.text = "\(news.repostsCount)"
         cell.commentsCountLabel.text = "\(news.commentsCount)"
         cell.ownerName.text = news.sourceName
- 
-        if let image = news.avatar {
-            cell.ownerImage.setImage ( image: image )
-        } else {
-            let url = news.photoUrl
-            NetSession.instance.receiveImageByURL ( imageUrl: url ) { [ weak news, weak cell] ( image ) in
-                news?.avatar = image
-                cell?.ownerImage.setImage ( image: image )
-            }
-        }
-
+        cell.ownerImage.setImage ( image: photoManager.image ( indexPath: indexPath, at: news.photoUrl ))
         return cell
     }
 }
