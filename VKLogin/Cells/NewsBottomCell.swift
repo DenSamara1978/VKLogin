@@ -1,24 +1,19 @@
 //
-//  NewsPostCell.swift
+//  PostNewsBottomCell.swift
 //  VKLogin
 //
-//  Created by Denis Vlaskin on 21.04.2020.
+//  Created by Denis Vlaskin on 23.05.2020.
 //  Copyright © 2020 Denis. All rights reserved.
 //
 
 import UIKit
 
-class PostNewsCell : UITableViewCell {
-    
-    @IBOutlet weak var ownerName: UILabel!
-    @IBOutlet weak var ownerImage: RoundImageView!
-    @IBOutlet weak var postText: UILabel!
+class NewsBottomCell : UITableViewCell {
     
     @IBOutlet weak var commentsCountLabel : UILabel!
     @IBOutlet weak var viewsCountLabel : UILabel!
     @IBOutlet weak var repostsCountLabel : UILabel!
     @IBOutlet weak var likesCountLabel : UILabel!
-    
     @IBOutlet weak var likeImageView : UIImageView!
     
     
@@ -29,8 +24,5 @@ class PostNewsCell : UITableViewCell {
         viewsCountLabel.text = "0"
         repostsCountLabel.text = "0"
         likesCountLabel.text = "0"
-        
-        ownerName.text = "Unknown"
-        postText.text = "Post text."
     }
 }

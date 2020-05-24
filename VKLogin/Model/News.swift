@@ -9,7 +9,7 @@
 import UIKit
 import RealmSwift
 
-class PostNews : Object
+class News : Object
 {
     @objc dynamic var id : Int = 0
     @objc dynamic var text : String = ""
@@ -18,21 +18,20 @@ class PostNews : Object
     @objc dynamic var repostsCount : Int = 0
     @objc dynamic var likesCount : Int = 0
     @objc dynamic var sourceName : String = ""
+    @objc dynamic var avatarUrl : String = ""
     @objc dynamic var photoUrl : String = ""
+    @objc dynamic var photoWidth : Double = 0.0
+    @objc dynamic var photoHeight : Double = 0.0
 
-    convenience required init ( id: Int, sourceName: String, text: String, comments: Int, views: Int, reposts: Int, likes: Int, _photoUrl: String ) {
-        self.init ()
-        self.id = id
-        self.sourceName = sourceName
-        self.text = text
-        commentsCount = comments
-        viewsCount = views
-        repostsCount = reposts
-        likesCount = likes
-        photoUrl = _photoUrl
-    }
-
-    override class func primaryKey() -> String? {
+     override class func primaryKey() -> String? {
         return "id"
+    }
+    
+    var hasPhoto: Bool {
+        return !photoUrl.trimmingCharacters ( in: .whitespacesAndNewlines ).isEmpty
+    }
+    
+    var aspectRatio: CGFloat {
+        return CGFloat ( photoHeight / photoWidth )
     }
 }
