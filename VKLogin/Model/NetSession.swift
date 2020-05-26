@@ -72,6 +72,24 @@ class NetSession
         }
     }
 
+    public func receiveGroupsData ( group_ids: String, completion: @escaping ( [Group] ) -> Void ) {
+        let queries = [
+            URLQueryItem ( name: "group_ids", value: group_ids ),
+            URLQueryItem ( name: "fields", value: "name, photo_200_orig" )
+        ]
+        self.post ( method: "groups.getById", queries: queries ) { [completion] ( json ) in
+            var groups : [Group] = []
+            for item in json.arrayValue {
+                let id = item ["id"].intValue
+                let name = item ["name"].stringValue
+                let photoUrl = item ["photo_200"].stringValue
+                let group = Group (_id: id, _groupName: name, _photoUrl: photoUrl )
+                groups.append ( group )
+            }
+            completion ( groups )
+        }
+    }
+
     public func receiveGroupList ( completion: @escaping ( [Group] ) -> Void ) {
         let queries = [
             URLQueryItem ( name: "extended", value: "1" ),
@@ -91,40 +109,74 @@ class NetSession
         }
     }
     
-    public func receiveNewsList ( completion: @escaping ( [PostNews] ) -> Void ) {
-        let queries = [
-            URLQueryItem ( name: "filters", value: "post" )
+    public func receiveNewsList ( startFrom: String, completion: @escaping ( [News], String ) -> Void ) {
+        var queries : [URLQueryItem] = [
+            URLQueryItem ( name: "filters", value: "post" ),
+            URLQueryItem ( name: "count", value: "10" ),
         ]
+        if ( !startFrom.isEmpty ) {
+            queries.append ( URLQueryItem ( name: "start_from", value: startFrom ))
+        }
+        
         post ( method: "newsfeed.get", queries: queries ) {[completion, self] ( json ) in
-            var postNews : [PostNews] = []
-            let newsArray = json ["items"].arrayValue
+            var newsArray : [News] = []
+            let nextFrom = json ["next_from"].stringValue
+            let jsonArray = json ["items"].arrayValue
 
             var user_ids : String = ""
-            for item in newsArray {
-                if ( !user_ids.isEmpty ) {
-                    user_ids += ","
-                }
-                user_ids += String ( item ["source_id"].intValue )
-            }
-            self.receiveUserData(user_ids: user_ids) { ( friends ) in
-                for item in newsArray {
-
-                    let id = item["post_id"].intValue
-                    let text = item["text"].stringValue
-                    let comments = item["comments"]["count"].intValue
-                    let reposts = item["reposts"]["count"].intValue
-                    let likes = item["likes"]["count"].intValue
-                    let views = item["views"]["count"].intValue
-                    let source_id = item["source_id"].intValue
-                    
-                    let friend = friends.first() { $0.id == source_id }
-                    if ( friend != nil ) {
-                        let name = friend!.firstName + " " + friend!.lastName
-                        postNews.append ( PostNews ( id: id, sourceName: name, text: text, comments: comments, views: views, reposts: reposts, likes: likes, _photoUrl: friend!.photoUrl ))
+            var group_ids : String = ""
+            for item in jsonArray {
+                let id = item ["source_id"].intValue
+                if ( id >= 0 ) {
+                    if ( !user_ids.isEmpty ) {
+                        user_ids += ","
                     }
+                    user_ids += String ( id )
                 }
-                DispatchQueue.main.async {
-                    completion ( postNews )
+                else {
+                    if ( !group_ids.isEmpty ) {
+                        group_ids += ","
+                    }
+                    group_ids += String ( -id )
+                }
+            }
+            self.receiveGroupsData(group_ids: group_ids) { ( groups ) in
+                self.receiveUserData(user_ids: user_ids) { ( friends ) in
+                    for item in jsonArray {
+
+                        let news = News ()
+                        news.id = item["post_id"].intValue
+                        news.text = item["text"].stringValue
+                        news.commentsCount = item["comments"]["count"].intValue
+                        news.repostsCount = item["reposts"]["count"].intValue
+                        news.likesCount = item["likes"]["count"].intValue
+                        news.viewsCount = item["views"]["count"].intValue
+                        let source_id = item["source_id"].intValue
+                        
+                        let photoSet = item["attachments"].arrayValue.first?["photo"]["sizes"].arrayValue
+                        if let photo = photoSet?.first ( where: { $0["type"].stringValue == "p" } ) {
+                            news.photoUrl = photo["url"].stringValue
+                            news.photoWidth = photo["width"].doubleValue
+                            news.photoHeight = photo["height"].doubleValue
+                        }
+                        
+                        if ( source_id >= 0 ) {
+                            let friend = friends.first() { $0.id == source_id }
+                            guard let fr = friend else { continue }
+                            news.sourceName = fr.firstName + " " + fr.lastName
+                            news.avatarUrl = fr.photoUrl
+                        }
+                        else {
+                            let group = groups.first() { $0.id == -source_id }
+                            guard let gr = group else { continue }
+                            news.sourceName = gr.groupName
+                            news.avatarUrl = gr.photoUrl
+                        }
+                        newsArray.append ( news )
+                    }
+                    DispatchQueue.main.async {
+                        completion ( newsArray, nextFrom )
+                    }
                 }
             }
         }
@@ -182,7 +234,7 @@ class NetSession
         components.queryItems = [
             URLQueryItem ( name: "access_token", value: token ),
             URLQueryItem ( name: "user_id", value: userId ),
-            URLQueryItem ( name: "v", value: "5.68" )
+            URLQueryItem ( name: "v", value: "5.77" )
         ]
         components.queryItems?.append(contentsOf: queries)
         

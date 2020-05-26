@@ -25,7 +25,7 @@ class FriendDataSource {
                     print ( json )
                     if ( json.count > 0 )
                     {
-                        let userArray = json["items"].arrayValue
+                        let userArray = json["response"]["items"].arrayValue
                         var user_ids : String = ""
                         for item in userArray {
                             if ( !user_ids.isEmpty ) {
@@ -33,7 +33,7 @@ class FriendDataSource {
                             }
                             user_ids += String ( item.intValue )
                         }
-                        for item in json.arrayValue {
+                        for item in json["response"]["items"].arrayValue {
                             let id = item ["id"].intValue
                             let firstName = item ["first_name"].stringValue
                             let lastName = item ["last_name"].stringValue
@@ -46,7 +46,7 @@ class FriendDataSource {
                 return Promise.value ( friends )
         }
     }
-    
+
     private static func prepareRequest () -> URLRequest {
         var components = URLComponents ()
         components.scheme = "https"
@@ -55,13 +55,14 @@ class FriendDataSource {
         components.queryItems = [
             URLQueryItem ( name: "access_token", value: NetSession.instance.token ),
             URLQueryItem ( name: "user_id", value: NetSession.instance.userId ),
+            URLQueryItem ( name: "fields", value: "photo_50" ),
             URLQueryItem ( name: "v", value: "5.68" )
         ]
         var request = URLRequest ( url: components.url! )
-        request.httpMethod = "POST"
+        request.httpMethod = "GET"
         return request
     }
-
+    
     private static func prepareUserDataRequest ( user_ids: String ) -> URLRequest {
         var components = URLComponents ()
         components.scheme = "https"
