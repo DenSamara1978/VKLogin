@@ -12,6 +12,7 @@ target 'VKLogin' do
   pod 'Firebase/Analytics'
   pod 'Firebase/Auth'
   pod 'Firebase/Database'
-  pod 'PromiseKit' 
+  pod 'PromiseKit'
+  pod 'Texture'
 
 end

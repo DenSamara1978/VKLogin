@@ -190,7 +190,10 @@ class NetSession
         post ( method: "photos.get", queries: queries ) {[completion] ( json ) in
             var urls : [String] = []
             for item in json ["items"].arrayValue {
-                urls.append( item ["photo_130"].stringValue )
+                let photoSet = item["sizes"].arrayValue
+                if let photo = photoSet.first ( where: { $0["type"].stringValue == "p" } ) {
+                    urls.append(photo["url"].stringValue)
+                }
             }
             completion ( urls )
         }
