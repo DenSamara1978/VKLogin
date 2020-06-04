@@ -108,21 +108,21 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="FriendCell" id="Btk-PN-Igg" userLabel="FriendCell" customClass="FriendCell" customModule="VKLogin" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="28" width="375" height="67.5"/>
+                                <rect key="frame" x="0.0" y="28" width="375" height="67"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="Btk-PN-Igg" id="9Hv-bW-BMJ">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="67.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="67"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="27L-LD-uLo">
-                                            <rect key="frame" x="28" y="23" width="260" height="21.5"/>
+                                            <rect key="frame" x="28" y="23" width="260" height="21"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nQ2-H4-4oR" customClass="RoundImageView" customModule="VKLogin" customModuleProvider="target">
-                                            <rect key="frame" x="300" y="9" width="50" height="50"/>
+                                            <rect key="frame" x="300" y="8.5" width="50" height="50"/>
                                             <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="50" id="0hL-H4-r0t"/>
@@ -153,7 +153,6 @@
                                 <connections>
                                     <outlet property="friendImageView" destination="nQ2-H4-4oR" id="Jdc-51-y7v"/>
                                     <outlet property="friendNameLabel" destination="27L-LD-uLo" id="dEn-3A-pXA"/>
-                                    <segue destination="ynw-2F-hx9" kind="show" identifier="Show Friend's Photos" id="tSP-nW-pfl"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -204,7 +203,7 @@
             <objects>
                 <collectionViewController modalPresentationStyle="fullScreen" id="ynw-2F-hx9" customClass="PhotoController" customModule="VKLogin" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="kjx-NM-7C5">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="542"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="ag0-vA-SNX">

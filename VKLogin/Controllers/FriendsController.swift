@@ -130,16 +130,21 @@ class FriendsController: UITableViewController {
         return cell
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "Show Friend's Photos", let indexPath = tableView.indexPathForSelectedRow {
-            let destinationViewController = segue.destination as? PhotoController
-            if let friend = getFriend ( section: indexPath.section, row: indexPath.row ) {
-                destinationViewController?.friend = friend
-            }
-        }
-    }
-    
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        if segue.identifier == "Show Friend's Photos", let indexPath = tableView.indexPathForSelectedRow {
+//            let destinationViewController = segue.destination as? PhotoController
+//            if let friend = getFriend ( section: indexPath.section, row: indexPath.row ) {
+//                destinationViewController?.friend = friend
+//            }
+//        }
+//    }
 
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let friend = getFriend ( section: indexPath.section, row: indexPath.row )
+        let vc = PhotoController(friend: friend)
+        tableView.deselectRow(at: indexPath, animated: false)
+        present(vc, animated: true, completion: nil)
+    }
 }
 
 extension FriendsController : UISearchResultsUpdating {
