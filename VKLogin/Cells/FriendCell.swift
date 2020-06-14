@@ -18,4 +18,10 @@ class FriendCell: UITableViewCell {
         friendNameLabel.text = ""
         friendImageView.setImage(image: nil)
     }
+
+    func configure ( friendViewModel: FriendViewModel?, image: UIImage? ) {
+        guard let friendViewModel = friendViewModel else { return }
+        friendNameLabel.text = friendViewModel.friendName
+        friendImageView.setImage ( image: image )
+    }
 }

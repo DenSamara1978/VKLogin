@@ -15,11 +15,11 @@ class FriendDataSource {
     private init () {
     }
     
-    public static func receiveFriendList ( controller: UITableViewController? ) -> Promise<[Friend]> {
+    public static func receiveFriendList ( controller: UITableViewController? ) -> Promise<[RealmFriend]> {
         let request = prepareRequest()
         return URLSession.shared.dataTask ( .promise, with: request )
-            .then(on: DispatchQueue.global ()) { response -> Promise<[Friend]> in
-                var friends : [Friend] = []
+            .then(on: DispatchQueue.global ()) { response -> Promise<[RealmFriend]> in
+                var friends : [RealmFriend] = []
                 do {
                     let json = try JSON(data: response.data)
                     print ( json )
@@ -38,7 +38,7 @@ class FriendDataSource {
                             let firstName = item ["first_name"].stringValue
                             let lastName = item ["last_name"].stringValue
                             let photoUrl = item ["photo_200_orig"].stringValue
-                            let friend = Friend ( _id: id, _firstName: firstName, _lastName: lastName, _photoUrl: photoUrl )
+                            let friend = RealmFriend ( _id: id, _firstName: firstName, _lastName: lastName, _photoUrl: photoUrl )
                             friends.append ( friend )
                         }
                     }

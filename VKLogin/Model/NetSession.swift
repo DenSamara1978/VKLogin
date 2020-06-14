@@ -27,7 +27,7 @@ class NetSession
     private init () {
     }
     
-    public func receiveFriendList ( completion: @escaping ( [Friend] ) -> Void ) {
+    public func receiveFriendList ( completion: @escaping ( [RealmFriend] ) -> Void ) {
         post ( method: "friends.get", queries: [] ) {[completion] ( json ) in
             if ( json.count > 0 )
             {
@@ -53,54 +53,54 @@ class NetSession
         }
     }
     
-    public func receiveUserData ( user_ids: String, completion: @escaping ( [Friend] ) -> Void ) {
+    public func receiveUserData ( user_ids: String, completion: @escaping ( [RealmFriend] ) -> Void ) {
         let queries = [
             URLQueryItem ( name: "user_ids", value: user_ids ),
             URLQueryItem ( name: "fields", value: "first_name, last_name, photo_200_orig" )
         ]
         self.post ( method: "users.get", queries: queries ) { [completion] ( json ) in
-            var friends : [Friend] = []
+            var friends : [RealmFriend] = []
             for item in json.arrayValue {
                 let id = item ["id"].intValue
                 let firstName = item ["first_name"].stringValue
                 let lastName = item ["last_name"].stringValue
                 let photoUrl = item ["photo_200_orig"].stringValue
-                let friend = Friend ( _id: id, _firstName: firstName, _lastName: lastName, _photoUrl: photoUrl )
+                let friend = RealmFriend ( _id: id, _firstName: firstName, _lastName: lastName, _photoUrl: photoUrl )
                 friends.append ( friend )
             }
             completion ( friends )
         }
     }
 
-    public func receiveGroupsData ( group_ids: String, completion: @escaping ( [Group] ) -> Void ) {
+    public func receiveGroupsData ( group_ids: String, completion: @escaping ( [RealmGroup] ) -> Void ) {
         let queries = [
             URLQueryItem ( name: "group_ids", value: group_ids ),
             URLQueryItem ( name: "fields", value: "name, photo_200_orig" )
         ]
         self.post ( method: "groups.getById", queries: queries ) { [completion] ( json ) in
-            var groups : [Group] = []
+            var groups : [RealmGroup] = []
             for item in json.arrayValue {
                 let id = item ["id"].intValue
                 let name = item ["name"].stringValue
                 let photoUrl = item ["photo_200"].stringValue
-                let group = Group (_id: id, _groupName: name, _photoUrl: photoUrl )
+                let group = RealmGroup (_id: id, _groupName: name, _photoUrl: photoUrl )
                 groups.append ( group )
             }
             completion ( groups )
         }
     }
 
-    public func receiveGroupList ( completion: @escaping ( [Group] ) -> Void ) {
+    public func receiveGroupList ( completion: @escaping ( [RealmGroup] ) -> Void ) {
         let queries = [
             URLQueryItem ( name: "extended", value: "1" ),
             URLQueryItem ( name: "fields", value: "name, photo_200" )
         ]
         post ( method: "groups.get", queries: queries ) {[completion] ( json ) in
-            var groups: [Group] = []
+            var groups: [RealmGroup] = []
             if ( json.count > 0 ) {
                 let groupArray = json ["items"].arrayValue
                 for item in groupArray {
-                    groups.append ( Group ( _id: item ["id"].intValue, _groupName: item ["name"].stringValue, _photoUrl: item ["photo_200"].stringValue ))
+                    groups.append ( RealmGroup ( _id: item ["id"].intValue, _groupName: item ["name"].stringValue, _photoUrl: item ["photo_200"].stringValue ))
                 }
             }
             DispatchQueue.main.async {
@@ -211,13 +211,13 @@ class NetSession
         }
     }
 
-    public func receiveSearchedGroups ( _ groupName: String, completion: @escaping ( [Group] ) -> Void  ) {
+    public func receiveSearchedGroups ( _ groupName: String, completion: @escaping ( [RealmGroup] ) -> Void  ) {
         post ( method: "groups.search", queries: [URLQueryItem ( name: "q", value: groupName )]) { [completion] ( json ) in
-            var groups: [Group] = []
+            var groups: [RealmGroup] = []
             if ( json.count > 0 ) {
                 let groupArray = json ["items"].arrayValue
                 for item in groupArray {
-                    groups.append ( Group ( _id: item ["id"].intValue, _groupName: item ["name"].stringValue, _photoUrl: item ["photo_200"].stringValue ))
+                    groups.append ( RealmGroup ( _id: item ["id"].intValue, _groupName: item ["name"].stringValue, _photoUrl: item ["photo_200"].stringValue ))
                 }
             }
             DispatchQueue.main.async {

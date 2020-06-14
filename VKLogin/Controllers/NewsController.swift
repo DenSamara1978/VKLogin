@@ -110,7 +110,7 @@ class NewsController: UITableViewController {
             cell.delegate = self
             cell.indexPath = indexPath
             cell.ownerName.text = post.sourceName
-            cell.ownerImage.setImage ( image: photoManager.image ( indexPath: indexPath, at: post.avatarUrl ))
+            cell.ownerImage.setImage ( image: photoManager.image ( at: post.avatarUrl ))
             let text = post.text
             cell.postText.text = text
             cell.textHeight = cell.postText.sizeThatFits(CGSize(width: tableView.frame.width, height: CGFloat.greatestFiniteMagnitude)).height
@@ -135,7 +135,7 @@ class NewsController: UITableViewController {
         else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "NewsPhotoCell", for: indexPath) as! NewsPhotoCell
             cell.resetImage ()
-            cell.setImage(image: photoManager.image(indexPath: indexPath, at: post.photoUrl))
+            cell.setImage(image: photoManager.image(at: post.photoUrl))
             return cell
         }
     }

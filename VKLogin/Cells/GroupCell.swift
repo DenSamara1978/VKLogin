@@ -17,4 +17,9 @@ class GroupCell: UITableViewCell {
         groupnameLabel.text = ""
         groupImageView.setImage ( image: nil )
     }
+    
+    func configure ( groupViewModel: GroupViewModel, image: UIImage? ) {
+        groupnameLabel.text = groupViewModel.groupName
+        groupImageView.setImage ( image: image )
+    }
 }
