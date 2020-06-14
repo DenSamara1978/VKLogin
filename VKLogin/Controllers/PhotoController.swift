@@ -10,14 +10,14 @@ import UIKit
 import AsyncDisplayKit
 
 class PhotoController: ASViewController<ASDisplayNode> {
-    var friend: Friend?
+    var friend: FriendViewModel?
     var photoUrls: [String] = []
     
     var tableNode: ASTableNode {
         return node as! ASTableNode
     }
     
-    init ( friend: Friend? ) {
+    init ( friend: FriendViewModel? ) {
         super.init(node: ASTableNode())
         
         self.friend = friend
@@ -32,7 +32,7 @@ class PhotoController: ASViewController<ASDisplayNode> {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = ( friend?.firstName ?? "" ) + " " + ( friend?.lastName ?? "" )
+        title = friend?.friendName
         NetSession.instance.receiveUserPhotoList ( user: "\(friend?.id ?? -1)" ) { ( urls: [String] ) in
             self.photoUrls = urls
             DispatchQueue.main.async {

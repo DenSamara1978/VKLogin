@@ -11,22 +11,18 @@ import RealmSwift
 
 class FavouriteGroupsController: UITableViewController {
 
+    private let groupService = GroupAdapter ()
+    lazy var photoManager = PhotoManager ( table: self.tableView )
+    
     private var searchController: UISearchController = .init ()
     
-    private var filteredGroups: [Group] = []
+    private var filteredGroupViewModels: [GroupViewModel] = []
     
-    private var groups: Results<Group>?
+    private var groupViewModels: [GroupViewModel] = []
     private var realmNotification: NotificationToken?
 
-    lazy var photoManager = PhotoManager ( table: self.tableView )
-
-    private var groupsArray : [Group] {
-        guard let gr = groups else { return [] }
-        return Array ( gr )
-    }
-    
-    private var actuallyGroups : [Group] {
-        return searchController.isActive ? filteredGroups : groupsArray
+    private var actuallyGroupViewModels : [GroupViewModel] {
+        return searchController.isActive ? filteredGroupViewModels : groupViewModels
     }
     
     override func viewDidLoad() {
@@ -38,36 +34,17 @@ class FavouriteGroupsController: UITableViewController {
         refreshControl = UIRefreshControl ()
         refreshControl?.addTarget(self, action: #selector ( refresh ), for: .valueChanged)
         
-        loadData ()
-        GroupDataSource.receiveGroupList(controller: self)
+        groupService.getGroups(){ [weak self] groups in
+            guard let self = self else { return }
+            let factory = GroupViewModelFactory ()
+            self.groupViewModels = factory.constructViewModels(from: groups)
+            self.tableView.reloadData()
+        }
+        refresh ()
     }
     
     @objc func refresh () {
         GroupDataSource.receiveGroupList(controller: self)
-    }
-
-    private func loadData () {
-        do {
-            let realm = try Realm ()
-            groups = realm.objects ( Group.self )
-            realmNotification = groups?.observe { [weak self] (changes: RealmCollectionChange) in
-                guard let tableView = self?.tableView else { return }
-                switch changes {
-                case .initial:
-                    tableView.reloadData()
-                case .update(_, let deletions, let insertions, let modifications):
-                    tableView.beginUpdates()
-                    tableView.insertRows(at: insertions.map({ IndexPath(row: $0, section: 0) }), with: .automatic)
-                    tableView.deleteRows(at: deletions.map({ IndexPath(row: $0, section: 0)}), with: .automatic)
-                    tableView.reloadRows(at: modifications.map({ IndexPath(row: $0, section: 0) }), with: .automatic)
-                    tableView.endUpdates()
-                case .error(let error):
-                    fatalError("\(error)")
-                }
-            }
-        } catch {
-            print ( error.localizedDescription )
-        }
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -75,15 +52,16 @@ class FavouriteGroupsController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return actuallyGroups.count
+        return actuallyGroupViewModels.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "GroupCell", for: indexPath) as? GroupCell else {
             preconditionFailure ( "Can't dequeue GroupCell" )
         }
-        cell.groupnameLabel.text = actuallyGroups [indexPath.row].groupName
-        cell.groupImageView.setImage ( image: photoManager.image ( indexPath: indexPath, at: actuallyGroups [indexPath.row].photoUrl ))
+        let group = actuallyGroupViewModels [indexPath.row]
+        let image = photoManager.image(at: group.avatarUrl )
+        cell.configure ( groupViewModel: group, image: image )
         return cell
     }
 }
@@ -92,7 +70,7 @@ extension FavouriteGroupsController : UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         guard let text = searchController.searchBar.text else { return }
         
-        filteredGroups = groupsArray.reduce( [Group] (), { ( result, arg ) in
+        filteredGroupViewModels = groupViewModels.reduce( [GroupViewModel] (), { ( result, arg ) in
             var array = result
             if ( arg.groupName.lowercased().contains(text.lowercased())) {
                 array.append ( arg )

@@ -1,5 +1,5 @@
 //
-//  Group.swift
+//  GroupViewModel.swift
 //  VKLogin
 //
 //  Created by Denis Vlaskin on 14.06.2020.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Group {
+struct GroupViewModel {
     let groupName : String
-    let photoUrl : String
+    let avatarUrl: String
 }

@@ -1,5 +1,5 @@
 //
-//  Friend.swift
+//  FriendViewModel.swift
 //  VKLogin
 //
 //  Created by Denis Vlaskin on 14.06.2020.
@@ -8,11 +8,9 @@
 
 import UIKit
 
-
-struct Friend {
-    let firstName : String
-    let lastName : String
-    let photoUrl : String
+struct FriendViewModel {
+    let friendName: String
+    let avatarUrl: String
     let images : [UIImage?]
     let id: Int
 }

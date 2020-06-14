@@ -11,25 +11,23 @@ import RealmSwift
 
 class FriendsController: UITableViewController {
 
-    private var filteredFriends : [ String: [Friend]] = [:]
-    
+    private let friendService = FriendAdapter ()
+    lazy var photoManager = PhotoManager ( table: self.tableView )
+
     private let searchController : UISearchController = .init ()
-    
-    private var friendsResult: Results<Friend>?
+
+    private var filteredFriendViewModels : [ String: [FriendViewModel]] = [:]
+    private var friendViewModelsResult: [FriendViewModel] = []
     private var realmNotification: NotificationToken?
     
-    lazy var photoManager = PhotoManager ( table: self.tableView )
-    
     private var sections : [String] {
-        return Array ( actuallyFriends.keys ).sorted ()
+        return Array ( actuallyFriendViewModels.keys ).sorted ()
     }
     
-    private var friends : [String : [Friend ]] {
-        var result : [ String : [Friend]] = [:]
-        guard let fr = friendsResult else { return [:] }
-        let frs = Array ( fr )
-        for friend in frs {
-            let letter = String ( friend.firstName.first ?? "-" )
+    private var friendViewModels : [String : [FriendViewModel]] {
+        var result : [ String : [FriendViewModel]] = [:]
+        for friend in friendViewModelsResult {
+            let letter = String ( friend.friendName.first ?? "-" )
             if ( result [letter] == nil ) {
                 result [letter] = [friend]
             }
@@ -40,10 +38,15 @@ class FriendsController: UITableViewController {
         return result
     }
 
-    private var actuallyFriends : [ String: [Friend]] {
-        return searchController.isActive ? filteredFriends : friends
+    private var actuallyFriendViewModels : [ String: [FriendViewModel]] {
+        return searchController.isActive ? filteredFriendViewModels : friendViewModels
     }
     
+    private func getFriend ( section: Int, row: Int ) -> FriendViewModel? {
+        let title = sections [section]
+        return actuallyFriendViewModels [title]?[row]
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -53,7 +56,12 @@ class FriendsController: UITableViewController {
         refreshControl = UIRefreshControl ()
         refreshControl?.addTarget( self, action: #selector ( refresh ), for: .valueChanged)
         
-        loadData ()
+        friendService.getFriends() { [ weak self] friends in
+            guard let self = self else { return }
+            let factory = FriendViewModelFactory ()
+            self.friendViewModelsResult = factory.constructViewModels(from: friends)
+            self.tableView.reloadData()
+        }
         refresh ()
     }
 
@@ -61,12 +69,7 @@ class FriendsController: UITableViewController {
         NetSession.instance.receiveFriendList ( completion: saveData )
     }
 
-    private func getFriend ( section: Int, row: Int ) -> Friend? {
-        let title = sections [section]
-        return actuallyFriends [title]?[row]
-    }
-    
-    private func saveData( _ list: [Friend] ) {
+    private func saveData( _ list: [RealmFriend] ) {
         do {
             let realm = try Realm()
             realm.beginWrite()
@@ -78,29 +81,6 @@ class FriendsController: UITableViewController {
         }
     }
    
-    private func loadData () {
-        do {
-            let realm = try Realm ()
-            friendsResult = realm.objects ( Friend.self )
-            realmNotification = friendsResult?.observe { [weak self] (changes: RealmCollectionChange) in
-                guard let tableView = self?.tableView else { return }
-                switch changes {
-                case .initial:
-                    print ( "initial" )
-                    tableView.reloadData()
-                case .update(_, let deletions, let insertions, let modifications):
-                    print ( "reload" )
-                    tableView.reloadData()
-                case .error(let error):
-                    fatalError("\(error)")
-                }
-            }
-        } catch {
-            print ( error.localizedDescription )
-        }
-    }
-    
-
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -113,7 +93,7 @@ class FriendsController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let title = sections [section]
-        return ( actuallyFriends [title] )?.count ?? 0
+        return ( actuallyFriendViewModels [title] )?.count ?? 0
     }
 
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -125,23 +105,13 @@ class FriendsController: UITableViewController {
             preconditionFailure( "Can't dequeue FriendCell" )
         }
         let friend = getFriend ( section: indexPath.section, row: indexPath.row )
-        cell.friendNameLabel.text = ( friend?.firstName ?? "" ) + " " + (friend?.lastName ?? "")
-        cell.friendImageView.setImage ( image: photoManager.image ( indexPath: indexPath, at: friend?.photoUrl ?? "" ))
+        let image = photoManager.image(at: friend?.avatarUrl ?? "" )
+        cell.configure(friendViewModel: friend, image: image )
         return cell
     }
     
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if segue.identifier == "Show Friend's Photos", let indexPath = tableView.indexPathForSelectedRow {
-//            let destinationViewController = segue.destination as? PhotoController
-//            if let friend = getFriend ( section: indexPath.section, row: indexPath.row ) {
-//                destinationViewController?.friend = friend
-//            }
-//        }
-//    }
-
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let friend = getFriend ( section: indexPath.section, row: indexPath.row )
-        let vc = PhotoController(friend: friend)
+        let vc = PhotoController(friend: getFriend ( section: indexPath.section, row: indexPath.row ))
         tableView.deselectRow(at: indexPath, animated: false)
         present(vc, animated: true, completion: nil)
     }
@@ -151,13 +121,12 @@ extension FriendsController : UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         guard let text = searchController.searchBar.text else { return }
         
-        filteredFriends = friends.reduce ( [String: [Friend]] (), { ( result, arg ) in
+        filteredFriendViewModels = friendViewModels.reduce ( [String: [FriendViewModel]] (), { ( result, arg ) in
             let ( key, value ) = arg
             var dict = result
             
             let filtered = value.filter{
-                $0.firstName.lowercased().contains(text.lowercased()) ||
-                    $0.lastName.lowercased().contains(text.lowercased())
+                $0.friendName.lowercased().contains(text.lowercased())
             }
             
             if ( !filtered.isEmpty ) {

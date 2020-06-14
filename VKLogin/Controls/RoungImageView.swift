@@ -8,31 +8,11 @@
 
 import UIKit
 
-@IBDesignable class RoundImageView: UIView {
+class RoundImageView: UIView {
 
-    @IBInspectable var shadowColor : UIColor = .black
-    {
-        didSet
-        {
-            self.update ()
-        }
-    }
-
-    @IBInspectable var shadowOpacity : CGFloat = 1.0
-    {
-        didSet
-        {
-            self.update ()
-        }
-    }
-
-    @IBInspectable var shadowWidth : CGFloat = 2.0
-    {
-        didSet
-        {
-            self.update ()
-        }
-    }
+    var shadowColor : UIColor = UIColor.roundImageShadowColor
+    var shadowOpacity : CGFloat = 1.0
+    var shadowWidth : CGFloat = 2.0
     
     lazy var tapGestureRecognizer: UITapGestureRecognizer = {
         let recognizer = UITapGestureRecognizer(target: self, action: #selector(pickImage))
@@ -70,7 +50,7 @@ import UIKit
         _imageView.layer.masksToBounds = true
         
         _shadowView.layer.cornerRadius = bounds.width / 2
-        _shadowView.backgroundColor = .white
+        _shadowView.backgroundColor = UIColor.roundImageBackgroundColor
         
         imageView = _imageView
         shadowView = _shadowView

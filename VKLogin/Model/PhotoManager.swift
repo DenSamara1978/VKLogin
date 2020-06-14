@@ -10,7 +10,7 @@
 import UIKit
 
 fileprivate protocol Reloadable {
-    func reloadRow( index: IndexPath )
+    func reloadData()
 }
 
 
@@ -44,7 +44,7 @@ class PhotoManager {
         container = Collection(collection: collection)
     }
   
-    private func loadImage ( indexPath: IndexPath, url: String ) {
+    private func loadImage ( url: String ) {
         queue.async {
             guard let dataUrl = URL(string: url) else { return }
             if let imageData: Data = try? Data(contentsOf: dataUrl) {
@@ -52,7 +52,7 @@ class PhotoManager {
                 self.images [url] = image
                 self.saveImageToCache ( url: url, image: image )
                 DispatchQueue.main.async { [weak self] in
-                    self?.container.reloadRow ( index: indexPath )
+                    self?.container.reloadData ()
                 }
             }
         }
@@ -81,7 +81,7 @@ class PhotoManager {
         return image
     }
     
-    func image ( indexPath: IndexPath, at url: String ) -> UIImage? {
+    func image (at url: String ) -> UIImage? {
         if let cached = images [url] {
             return cached
         }
@@ -89,7 +89,7 @@ class PhotoManager {
             return cached
         }
         else {
-            loadImage ( indexPath: indexPath, url: url)
+            loadImage (url: url)
             return nil
         }
     }
@@ -103,8 +103,8 @@ extension PhotoManager {
             self.table = table
         }
         
-        func reloadRow ( index: IndexPath ) {
-            table.reloadRows ( at: [index], with: .automatic )
+        func reloadData () {
+            table.reloadData()
         }
     }
     
@@ -116,8 +116,8 @@ extension PhotoManager {
             self.collection = collection
         }
         
-        func reloadRow ( index: IndexPath ) {
-            collection.reloadItems ( at: [index] )
+        func reloadData () {
+            collection.reloadData()
         }
     }
     

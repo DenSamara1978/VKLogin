@@ -11,7 +11,7 @@ import SwiftyJSON
 
 class GroupParser : Operation {
     
-    var groups: [Group] = []
+    var groups: [RealmGroup] = []
     
     override func main() {
         guard let fetchDataOperation = dependencies.first as? FetchDataOperation,
@@ -24,7 +24,7 @@ class GroupParser : Operation {
             if ( json.count > 0 ) {
                 let groupArray = json ["items"].arrayValue
                 for item in groupArray {
-                    groups.append ( Group ( _id: item ["id"].intValue, _groupName: item ["name"].stringValue, _photoUrl: item ["photo_200"].stringValue ))
+                    groups.append ( RealmGroup ( _id: item ["id"].intValue, _groupName: item ["name"].stringValue, _photoUrl: item ["photo_200"].stringValue ))
                 }
             }
         } catch {

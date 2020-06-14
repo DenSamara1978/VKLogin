@@ -14,7 +14,7 @@ class AllGroupsController: UITableViewController {
     private var searchController: UISearchController = .init ()
     lazy var photoManager = PhotoManager ( table: self.tableView )
 
-    private var groups: [Group] = []
+    private var groups: [RealmGroup] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,7 +24,7 @@ class AllGroupsController: UITableViewController {
         tableView.tableHeaderView = searchController.searchBar
     }
 
-    public func setGroupArray ( _ groupArray: [Group] ) {
+    public func setGroupArray ( _ groupArray: [RealmGroup] ) {
         groups = groupArray
         tableView.reloadData ()
     }
@@ -42,7 +42,7 @@ class AllGroupsController: UITableViewController {
             preconditionFailure( "Can't dequeue GroupCell" )
         }
         cell.groupnameLabel.text = groups [indexPath.row].groupName
-        cell.groupImageView.setImage ( image: photoManager.image ( indexPath: indexPath, at: groups [indexPath.row].photoUrl ))
+        cell.groupImageView.setImage ( image: photoManager.image ( at: groups [indexPath.row].photoUrl ))
         return cell
     }
 }
