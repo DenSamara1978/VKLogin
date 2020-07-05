@@ -17,7 +17,7 @@ import SwiftyJSON
  */
 
 
-class NetSession
+class NetSession : NetInteractionService
 {
     var token: String = "-1"
     var userId: String = "-1"

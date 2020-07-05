@@ -143,7 +143,7 @@ class NewsController: UITableViewController {
 
 extension NewsController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        guard let maxNews = indexPaths.map(\.section).max(),
+        guard let maxNews = indexPaths.map({$0.section}).max(),
             let news = news, !loading,
             maxNews > news.count - 3 else { return }
         refresh ()
