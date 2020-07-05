@@ -58,7 +58,8 @@ class FriendsController: UITableViewController {
     }
 
     @objc func refresh () {
-        NetSession.instance.receiveFriendList ( completion: saveData )
+        let proxy = NetProxy (service: NetSession.instance)
+        proxy.receiveFriendList ( completion: saveData )
     }
 
     private func getFriend ( section: Int, row: Int ) -> Friend? {

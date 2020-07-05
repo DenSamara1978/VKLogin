@@ -34,6 +34,8 @@
 		92A064E22412A6700052651D /* DotAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A064E12412A6700052651D /* DotAnimator.swift */; };
 		92B29A122479A98600F83A75 /* NewsTopCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B29A112479A98600F83A75 /* NewsTopCell.swift */; };
 		92B29A142479A99400F83A75 /* NewsBottomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B29A132479A99400F83A75 /* NewsBottomCell.swift */; };
+		92B8B18C24B1DD6300F2946D /* NetInteractionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B8B18B24B1DD6300F2946D /* NetInteractionService.swift */; };
+		92B8B18E24B1DE6E00F2946D /* NetProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B8B18D24B1DE6E00F2946D /* NetProxy.swift */; };
 		92BDB8D124002C5400CD19BD /* NewsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92BDB8D024002C5400CD19BD /* NewsController.swift */; };
 		92C519F223EDF80600899D23 /* FriendsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C519F123EDF80600899D23 /* FriendsController.swift */; };
 		92C519F423EDF83300899D23 /* PhotoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C519F323EDF83300899D23 /* PhotoController.swift */; };
@@ -81,6 +83,8 @@
 		92A064E12412A6700052651D /* DotAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotAnimator.swift; sourceTree = "<group>"; };
 		92B29A112479A98600F83A75 /* NewsTopCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsTopCell.swift; sourceTree = "<group>"; };
 		92B29A132479A99400F83A75 /* NewsBottomCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsBottomCell.swift; sourceTree = "<group>"; };
+		92B8B18B24B1DD6300F2946D /* NetInteractionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetInteractionService.swift; sourceTree = "<group>"; };
+		92B8B18D24B1DE6E00F2946D /* NetProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetProxy.swift; sourceTree = "<group>"; };
 		92BDB8D024002C5400CD19BD /* NewsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsController.swift; sourceTree = "<group>"; };
 		92C519F123EDF80600899D23 /* FriendsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsController.swift; sourceTree = "<group>"; };
 		92C519F323EDF83300899D23 /* PhotoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoController.swift; sourceTree = "<group>"; };
@@ -161,7 +165,6 @@
 			children = (
 				92158BC8246D7DB300549025 /* Friend */,
 				92609C0724576FA7005D682E /* Group */,
-				92ED9189241C0D9F008D2025 /* NetSession.swift */,
 				9214D8CF244EC54800F7A603 /* News.swift */,
 				92609C0324576CC9005D682E /* AsyncOperation.swift */,
 				92609C0524576D28005D682E /* FetchDataOperation.swift */,
@@ -190,6 +193,16 @@
 				9201E9B023F6985400B93767 /* LikeControl.swift */,
 			);
 			path = Controls;
+			sourceTree = "<group>";
+		};
+		92B8B18A24B1DD3C00F2946D /* NetInteraction */ = {
+			isa = PBXGroup;
+			children = (
+				92ED9189241C0D9F008D2025 /* NetSession.swift */,
+				92B8B18B24B1DD6300F2946D /* NetInteractionService.swift */,
+				92B8B18D24B1DE6E00F2946D /* NetProxy.swift */,
+			);
+			path = NetInteraction;
 			sourceTree = "<group>";
 		};
 		92C519F023EDF77300899D23 /* Controllers */ = {
@@ -241,6 +254,7 @@
 		92DBD98F23E1635B00CB11EF /* VKLogin */ = {
 			isa = PBXGroup;
 			children = (
+				92B8B18A24B1DD3C00F2946D /* NetInteraction */,
 				92D75768240D8AE70021FF84 /* Animators */,
 				9201E9B223F6D19A00B93767 /* heart_PNG51352.png */,
 				9287A84E23F4792100A1FE7B /* Controls */,
@@ -404,9 +418,11 @@
 				92D7576A240D8B5C0021FF84 /* CustomPushAnimator.swift in Sources */,
 				926ED74A2409BB7100F8AB1E /* NewPhotoController.swift in Sources */,
 				92609C0924576FC1005D682E /* GroupDataSource.swift in Sources */,
+				92B8B18C24B1DD6300F2946D /* NetInteractionService.swift in Sources */,
 				92C519F623EDF88200899D23 /* FavouriteGroupsController.swift in Sources */,
 				92BDB8D124002C5400CD19BD /* NewsController.swift in Sources */,
 				92D7576C240D8D340021FF84 /* CustomNavigationControllerViewController.swift in Sources */,
+				92B8B18E24B1DE6E00F2946D /* NetProxy.swift in Sources */,
 				92DBD99123E1635B00CB11EF /* AppDelegate.swift in Sources */,
 				92ED918A241C0D9F008D2025 /* NetSession.swift in Sources */,
 				9285CB5C23EEC73700B4F749 /* FriendCell.swift in Sources */,
